@@ -10,7 +10,7 @@ import android.view.WindowManager;
 public class SplashPage extends Activity
 {
 	protected Boolean _active = true;
-	protected Integer _splashTime = 5000;
+	protected Integer _splashTime = 1000;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)

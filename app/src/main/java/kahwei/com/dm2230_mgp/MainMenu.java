@@ -50,7 +50,7 @@ public class MainMenu extends Activity implements OnClickListener
 		}
 		else if (v == btn_help)
 		{
-			//intent.setClass(this, Helppage.class);
+			intent.setClass(this, HelpPage.class);
 		}
 		else if (v == btn_options)
 		{
@@ -61,7 +61,6 @@ public class MainMenu extends Activity implements OnClickListener
 			// End this menu which ends the app
 			finish();
 		}
-
 
 		try
 		{
