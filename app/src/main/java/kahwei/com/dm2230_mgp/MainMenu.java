@@ -54,7 +54,7 @@ public class MainMenu extends Activity implements OnClickListener
 		}
 		else if (v == btn_options)
 		{
-
+			intent.setClass(this, OptionPage.class);
 		}
 		else if (v == btn_quit)
 		{
