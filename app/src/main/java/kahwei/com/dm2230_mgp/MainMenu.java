@@ -13,6 +13,8 @@ public class MainMenu extends Activity implements OnClickListener
 {
 	private Button btn_start;
 	private Button btn_help;
+	private Button btn_options;
+	private Button btn_quit;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -31,6 +33,10 @@ public class MainMenu extends Activity implements OnClickListener
 		btn_start.setOnClickListener(this);
 		btn_help = (Button)findViewById(R.id.btn_help);
 		btn_help.setOnClickListener(this);
+		btn_options = (Button)findViewById(R.id.btn_options);
+		btn_options.setOnClickListener(this);
+		btn_quit = (Button)findViewById(R.id.btn_quit);
+		btn_quit.setOnClickListener(this);
 	}
 
 	// On Click Event Handler for this Activity
@@ -46,8 +52,25 @@ public class MainMenu extends Activity implements OnClickListener
 		{
 			//intent.setClass(this, Helppage.class);
 		}
+		else if (v == btn_options)
+		{
 
-		startActivity(intent);
+		}
+		else if (v == btn_quit)
+		{
+			// End this menu which ends the app
+			finish();
+		}
+
+
+		try
+		{
+			startActivity(intent);
+		}
+		catch (Exception e)
+		{
+			// Prevent crashing for buttons that do nothing
+		}
 	}
 
 	// Pause Handler
