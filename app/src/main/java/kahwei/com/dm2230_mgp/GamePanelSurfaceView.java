@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -28,13 +29,12 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 	private short bgX = 0;
 	private short bgY = 0;
 	private final float BG_SCROLL_SPEED = 500;
-	// 4a) bitmap array to stores 4 images of the spaceship
-	final short NUM_SHIP_SPRITES = 4;
-	private Bitmap[] spaceship = new Bitmap[NUM_SHIP_SPRITES];
-	private final float SHIP_ANIM_SPEED = 200;
-	private float shipAnim = 0.0f;
 	// 4b) Variable as an index to keep track of the spaceship images
 	private Integer shipIndex = 0;
+
+	// Ship
+	Ship m_ship;
+	Bitmap m_shipSprite;
 
 	// Variables for FPS
 	public float FPS;
@@ -64,11 +64,13 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		// -- Load scaled version of the background
 		scaledBG = Bitmap.createScaledBitmap(bg, screenWidth, screenHeight, true);
 
-		// 4c) Load the images of the spaceships
-		spaceship[0] = BitmapFactory.decodeResource(getResources(), R.drawable.ship2_1);
-		spaceship[1] = BitmapFactory.decodeResource(getResources(), R.drawable.ship2_2);
-		spaceship[2] = BitmapFactory.decodeResource(getResources(), R.drawable.ship2_3);
-		spaceship[3] = BitmapFactory.decodeResource(getResources(), R.drawable.ship2_4);
+		// Initialize the Ship
+		m_ship = new Ship();
+		m_ship.Init(screenWidth * 0.5f, screenHeight * 0.85f);
+		m_shipSprite = BitmapFactory.decodeResource(getResources(), R.drawable.ship_a);
+		m_ship.SetScaleX(m_shipSprite.getWidth());
+		m_ship.SetScaleY(m_shipSprite.getHeight());
+
 
 		// Create the game loop thread
 		myThread = new GameThread(getHolder(), this);
@@ -127,10 +129,10 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		}
 
 		canvas.drawBitmap(scaledBG, bgX, bgY, null);
-		canvas.drawBitmap(scaledBG, bgX + screenWidth, bgY, null);
+		canvas.drawBitmap(scaledBG, bgX, bgY - screenHeight, null);
 
 		// 4d) Draw the spaceships
-		canvas.drawBitmap(spaceship[shipIndex], screenWidth * 0.1f, screenHeight * 0.5f, null);
+		canvas.drawBitmap(m_shipSprite, m_ship.GetPositionX() - m_ship.GetScaleX() * 0.5f, m_ship.GetPositionY() - m_ship.GetScaleY() * 0.5f, null);
 
 		// Bonus) To print FPS on the screen
 
@@ -142,28 +144,17 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 	{
 		FPS = fps;
 
-		switch (GameState) {
+		switch (GameState)
+		{
 			case 0:
 			{
 				// 3) Update the background to allow panning effect
-				bgX -= dt * BG_SCROLL_SPEED;
+				bgY += dt * BG_SCROLL_SPEED;
 
 				// Once the first one has left the screen, reset it back
-				if (bgX < -screenWidth)
+				if (bgY > screenHeight)
 				{
-					bgX = 0;
-				}
-
-				// 4e) Update the spaceship images / shipIndex so that the animation will occur.
-				shipAnim += dt;
-				if (shipAnim > SHIP_ANIM_SPEED)
-				{
-					shipAnim = 0.0f;
-					shipIndex++;
-					if (shipIndex >= NUM_SHIP_SPRITES)
-					{
-						shipIndex = 0;
-					}
+					bgY = 0;
 				}
 			}
 			break;
