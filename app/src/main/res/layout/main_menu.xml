@@ -1,4 +1,4 @@
-<TableLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -17,7 +17,7 @@
 
     <Button
         android:id="@+id/btn_start"
-        android:layout_width="163dp"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginRight="0dp"
         android:text="Play"
@@ -26,51 +26,62 @@
         android:layout_alignStart="@+id/btn_help"
         android:layout_marginTop="50dp"
         android:layout_marginLeft="0dp"
-        android:layout_marginBottom="0dp"
+        android:layout_marginBottom="20dp"
         android:enabled="true"
         android:typeface="normal"
         android:allowUndo="true"
-        android:background="@drawable/menu_button" />
+        android:background="@drawable/menu_button"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentBottom="false"
+        android:layout_above="@+id/btn_help" />
 
     <Button
         android:id="@+id/btn_help"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentRight="true"
         android:layout_marginRight="0dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="0dp"
         android:text="Instructions"
         android:textSize="18sp"
         android:textColor="#000000"
         android:singleLine="false"
-        android:background="@drawable/menu_button" />
+        android:background="@drawable/menu_button"
+        android:layout_marginBottom="20dp"
+        android:layout_above="@+id/btn_options" />
 
     <Button
         android:id="@+id/btn_options"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentRight="true"
         android:layout_marginRight="0dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="0dp"
         android:text="Options"
         android:textSize="18sp"
         android:textColor="#000000"
         android:singleLine="false"
-        android:background="@drawable/menu_button" />
+        android:background="@drawable/menu_button"
+        android:layout_marginBottom="20dp"
+        android:layout_above="@+id/btn_quit" />
 
     <Button
         android:id="@+id/btn_quit"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentRight="false"
         android:layout_marginRight="0dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="0dp"
         android:text="Quit"
         android:textSize="18sp"
         android:textColor="#000000"
         android:singleLine="false"
         android:background="@drawable/menu_button"
-        android:layout_gravity="right" />
+        android:layout_gravity="right"
+        android:layout_marginBottom="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentTop="false" />
 
 
-</TableLayout>
+</RelativeLayout>
