@@ -101,8 +101,7 @@ public class MainMenu extends Activity implements OnClickListener, SeekBar.OnSee
 		else if (v == btn_quit)
 		{
 			// End this menu which ends the app
-			//finish();
-			intent.setClass(this, PauseMenu.class);
+			finish();
 		}
 		// Options menu Section
 		else if (v == btn_back)

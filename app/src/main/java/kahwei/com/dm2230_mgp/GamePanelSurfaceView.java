@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -49,7 +50,23 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 	{
 		// Context is the current state of the application/object
 		super(context);
+		init(context);
+	}
 
+	public GamePanelSurfaceView(Context context, AttributeSet attrs)
+	{
+		super(context, attrs);
+		init(context);
+	}
+
+	public GamePanelSurfaceView(Context context, AttributeSet attrs, int defStyle)
+	{
+		super(context, attrs, defStyle);
+		init(context);
+	}
+
+	public void init(Context context)
+	{
 		// Adding the callback (this) to the surface holder to intercept events
 		getHolder().addCallback(this);
 
@@ -170,6 +187,16 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 				RenderGameplay(canvas);
 				break;
 		}
+	}
+
+	public void Pause()
+	{
+		myThread.pause();
+	}
+
+	public void Unpause()
+	{
+		myThread.unPause();
 	}
 
 	@Override
