@@ -7,6 +7,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * Created by xecli on 11/23/2015.
@@ -18,8 +19,14 @@ public class GamePage extends Activity implements View.OnClickListener
 	private Button btn_resume;
 	private Button btn_reset;
 	private Button btn_options;
+	private Button btn_confirmYes;
+	private Button btn_confirmNo;
+	private LinearLayout menu_confirm;
 	private LinearLayout menu_pause;
+	private TextView confirm_message;
 	private GamePanelSurfaceView game_surface;
+	// Confirmation Handling
+	private boolean confirmIsQuit;
 
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -41,8 +48,20 @@ public class GamePage extends Activity implements View.OnClickListener
 		btn_reset.setOnClickListener(this);
 		btn_options = (Button)findViewById(R.id.btn_options);
 		btn_options.setOnClickListener(this);
+		btn_confirmYes = (Button)findViewById(R.id.btn_confirmYes);
+		btn_confirmYes.setOnClickListener(this);
+		btn_confirmNo = (Button)findViewById(R.id.btn_confirmNo);
+		btn_confirmNo.setOnClickListener(this);
 		menu_pause = (LinearLayout)findViewById(R.id.PauseMenu);
+		menu_confirm = (LinearLayout)findViewById(R.id.ConfirmMenu);
+		confirm_message = (TextView)findViewById(R.id.confirmMessage);
 		game_surface = (GamePanelSurfaceView)findViewById(R.id.game_view);
+	}
+
+	private void pauseGame()
+	{
+		game_surface.Pause();
+		menu_pause.setVisibility(View.VISIBLE);
 	}
 
 	public void onClick(View v)
@@ -50,8 +69,7 @@ public class GamePage extends Activity implements View.OnClickListener
 		// Main Menu Section
 		if (v == btn_pause)
 		{
-			game_surface.Pause();
-			menu_pause.setVisibility(View.VISIBLE);
+			pauseGame();
 		}
 		else if (v == btn_resume)
 		{
@@ -64,14 +82,36 @@ public class GamePage extends Activity implements View.OnClickListener
 		}
 		else if (v == btn_reset)
 		{
-			// Send flag to game for resetting
-			game_surface.Unpause();
-			menu_pause.setVisibility(View.GONE);
+			confirmIsQuit = false;
+			confirm_message.setText("Reset Mission?");
+			menu_confirm.setVisibility(View.VISIBLE);
 		}
 		else if (v == btn_quit)
 		{
-			game_surface.Unpause();
-			finish();
+			confirmIsQuit = true;
+			confirm_message.setText("Exit to Main Menu?");
+			menu_confirm.setVisibility(View.VISIBLE);
+		}
+		// Confirm Menus
+		else if (v == btn_confirmYes)
+		{
+			if (confirmIsQuit)
+			{
+				game_surface.Unpause();
+				finish();
+			}
+			else
+			{
+				// TODO: Send flag to game for resetting
+				game_surface.Unpause();
+				menu_pause.setVisibility(View.GONE);
+				menu_confirm.setVisibility(View.GONE);
+			}
+		}
+		else if (v == btn_confirmNo)
+		{
+			// Close this menu
+			menu_confirm.setVisibility(View.GONE);
 		}
 	}
 
