@@ -11,11 +11,14 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
-public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.Callback{
+public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.Callback
+{
 	// Implement this interface to receive information about changes to the surface.
 
 	private GameThread myThread = null; // Thread to control the rendering
@@ -35,7 +38,6 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 
 	// Ship
 	Ship m_ship;
-	Bitmap m_shipSprite;
 
 	// Variables for FPS
 	public float FPS;
@@ -83,11 +85,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 
 		// Initialize the Ship
 		m_ship = new Ship();
-		m_ship.Init(screenWidth * 0.5f, screenHeight * 0.85f);
-		m_shipSprite = BitmapFactory.decodeResource(getResources(), R.drawable.ship_normal);
-		m_ship.SetScaleX(m_shipSprite.getWidth());
-		m_ship.SetScaleY(m_shipSprite.getHeight());
-
+		m_ship.Init(screenWidth * 0.5f, screenHeight * 0.85f, getResources());
 
 		// Create the game loop thread
 		myThread = new GameThread(getHolder(), this);
@@ -149,7 +147,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		canvas.drawBitmap(scaledBG, bgX, bgY - screenHeight, null);
 
 		// 4d) Draw the spaceships
-		canvas.drawBitmap(m_shipSprite, m_ship.GetPositionX() - m_ship.GetScaleX() * 0.5f, m_ship.GetPositionY() - m_ship.GetScaleY() * 0.5f, null);
+		canvas.drawBitmap(m_ship.GetShipTexture(), m_ship.GetPositionX() - m_ship.GetScaleX() * 0.5f, m_ship.GetPositionY() - m_ship.GetScaleY() * 0.5f, null);
 
 		// Bonus) To print FPS on the screen
 
@@ -202,9 +200,21 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
-
-		// 5) In event of touch on screen, the spaceship will relocate to the point of touch
-
+		if (event.getAction() == MotionEvent.ACTION_MOVE)
+		{
+			// Determine if it is on or around the ship
+			float touchX = event.getX();
+			float touchY = event.getY();
+//			if (
+//					touchX >= m_ship.GetPositionX() - m_ship.GetScaleX() && touchX <= m_ship.GetPositionX() + m_ship.GetScaleX()
+//					&&
+//					touchY >= m_ship.GetPositionY() - m_ship.GetScaleY() && touchY <= m_ship.GetPositionY() + m_ship.GetScaleY()
+//				)
+			{
+				m_ship.SetPositionX(touchX);
+				m_ship.SetPositionY(touchY);
+			}
+		}
 
 		return super.onTouchEvent(event);
 	}
