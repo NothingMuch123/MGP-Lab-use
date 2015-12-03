@@ -84,7 +84,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		// Initialize the Ship
 		m_ship = new Ship();
 		m_ship.Init(screenWidth * 0.5f, screenHeight * 0.85f);
-		m_shipSprite = BitmapFactory.decodeResource(getResources(), R.drawable.ship_a);
+		m_shipSprite = BitmapFactory.decodeResource(getResources(), R.drawable.ship_normal);
 		m_ship.SetScaleX(m_shipSprite.getWidth());
 		m_ship.SetScaleY(m_shipSprite.getHeight());
 
