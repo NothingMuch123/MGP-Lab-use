@@ -43,9 +43,12 @@ public class GameObject extends Object
     }
     public void Draw(Canvas canvas)
     {
-        Vector3 tf = GetTransform().m_translate;
-        Bitmap tex = GetMesh();
+        if (GetRender())
+        {
+            Vector3 tf = GetTransform().m_translate;
+            Bitmap tex = GetMesh();
 
-        canvas.drawBitmap(tex, tf.x - tex.getWidth() * 0.5f, tf.y - tex.getWidth() * 0.5f, null);
+            canvas.drawBitmap(tex, tf.x - tex.getWidth() * 0.5f, tf.y - tex.getWidth() * 0.5f, null);
+        }
     }
 }
