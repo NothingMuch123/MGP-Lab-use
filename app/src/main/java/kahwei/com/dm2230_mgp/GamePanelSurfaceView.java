@@ -147,7 +147,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		canvas.drawBitmap(scaledBG, bgX, bgY - screenHeight, null);
 
 		// 4d) Draw the spaceships
-		canvas.drawBitmap(m_ship.GetShipTexture(), m_ship.GetPositionX() - m_ship.GetScaleX() * 0.5f, m_ship.GetPositionY() - m_ship.GetScaleY() * 0.5f, null);
+		m_ship.Draw(canvas);
 
 		// Bonus) To print FPS on the screen
 

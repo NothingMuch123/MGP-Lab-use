@@ -3,11 +3,14 @@ package kahwei.com.dm2230_mgp;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+
+import kahwei.com.dm2230_mgp.Object.GameObject;
 
 /**
  * Created by xecli on 11/26/2015.
  */
-public class Ship
+public class Ship extends GameObject
 {
     // Position
     private float m_defaultPosX;
@@ -26,13 +29,14 @@ public class Ship
     private int m_powerLevel;
     private final int MAX_POWER_LEVEL = 3;
     private Bitmap m_shipTexture[];
+    private Bitmap m_rankTexture;
 
     Ship()
     {
-
+        super();
     }
 
-    void Init(float posX, float posY, Resources resources)
+    public void Init(float posX, float posY, Resources resources)
     {
         m_defaultPosX = m_positionX = posX;
         m_defaultPosY = m_positionY = posY;
@@ -43,45 +47,64 @@ public class Ship
         m_shipTexture[PowerType.PT_NORMAL.ordinal()] = BitmapFactory.decodeResource(resources, R.drawable.ship_normal);
         m_shipTexture[PowerType.PT_BEAM.ordinal()] = BitmapFactory.decodeResource(resources, R.drawable.ship_beam);
         m_shipTexture[PowerType.PT_SPIKE.ordinal()] = BitmapFactory.decodeResource(resources, R.drawable.ship_spike);
+
+        m_rankTexture = BitmapFactory.decodeResource(resources, R.drawable.rank);
     }
 
     /*
      * Setters
      */
-    void SetPositionX(float posX)
+    public void SetPositionX(float posX)
     {
         m_positionX = posX;
     }
 
-    void SetPositionY(float posY)
+    public void SetPositionY(float posY)
     {
         m_positionY = posY;
     }
     /*
      * Getters
      */
-    float GetPositionX()
+    public float GetPositionX()
     {
         return  m_positionX;
     }
 
-    float GetPositionY()
+    public float GetPositionY()
     {
         return m_positionY;
     }
 
-    float GetScaleX()
+    public float GetScaleX()
     {
-        return GetShipTexture().getWidth();
+        return GetMesh().getWidth();
     }
 
-    float GetScaleY()
+    public float GetScaleY()
     {
-        return GetShipTexture().getHeight();
+        return GetMesh().getHeight();
     }
 
-    Bitmap GetShipTexture()
+    @Override
+    public Bitmap GetMesh()
     {
         return m_shipTexture[m_power.ordinal()];
+    }
+
+    public void Draw(Canvas canvas)
+    {
+        float shipDrawPosX = GetPositionX() - GetScaleX() * 0.5f;
+        float shipDrawPosY = GetPositionY() - GetScaleY() * 0.5f;
+        float rankDrawPosY = shipDrawPosY + GetScaleY() * 0.5f;
+
+        // Draw the Ship
+        canvas.drawBitmap(GetMesh(), shipDrawPosX, shipDrawPosY, null);
+
+        for (int rankDrawn = 0; rankDrawn < m_powerLevel; ++rankDrawn)
+        {
+            canvas.drawBitmap(m_rankTexture, GetPositionX() - m_rankTexture.getWidth() * 0.5f, rankDrawPosY, null);
+            rankDrawPosY += m_rankTexture.getHeight() * 0.4f;
+        }
     }
 }
