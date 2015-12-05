@@ -23,7 +23,7 @@ public class GameThread extends Thread {
 	long lastTime = 0;
 	long lastFPSTime = 0;
 	float fps;
-	float dt;
+	float dt = 0.0f;
 
 	// Constructor for this class
 	public GameThread(SurfaceHolder holder, GamePanelSurfaceView myView){
@@ -32,6 +32,7 @@ public class GameThread extends Thread {
 		isPause = false; // for pause
 		this.myView = myView;
 		this.holder = holder;
+		lastTime = System.currentTimeMillis();
 	}
 
 	public void startRun(boolean r)
