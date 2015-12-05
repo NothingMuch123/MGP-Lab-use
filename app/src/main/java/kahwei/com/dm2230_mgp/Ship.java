@@ -5,8 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 
-import java.util.ArrayList;
-
 import kahwei.com.dm2230_mgp.Object.GameObject;
 import kahwei.com.dm2230_mgp.Object.Transform;
 import kahwei.com.dm2230_mgp.Object.Vector3;
@@ -17,10 +15,7 @@ import kahwei.com.dm2230_mgp.Object.Vector3;
 public class Ship extends GameObject
 {
     // Position
-    private float m_defaultPosX;
-    private float m_defaultPosY;
-    private float m_positionX;
-    private float m_positionY;
+    private Vector3 m_defaultPos;
 
     // Ship Power
     public enum PowerType
@@ -34,18 +29,25 @@ public class Ship extends GameObject
     private Bitmap m_rankTexture;
     private Weapon m_weapon;
 
+    // Life
+    private static final int MAX_LIVES = 5;
+    private static final int STARTING_LIVES = 2;
+    private int m_health;
+
     Ship()
     {
         super();
     }
 
-    public void Init(float posX, float posY, Resources resources)
+    public void Init(Vector3 pos, Resources resources)
     {
         // Initialize variables
-        m_defaultPosX = m_positionX = posX;
-        m_defaultPosY = m_positionY = posY;
+        m_defaultPos = pos;
+        SetPositionX(pos.x);
+        SetPositionY(pos.y);
         m_shipTexture = new Bitmap[PowerType.values().length];
         m_power = PowerType.PT_NORMAL;
+        m_health = STARTING_LIVES;
 
         // Load Ship Textures
         m_shipTexture[PowerType.PT_NORMAL.ordinal()] = BitmapFactory.decodeResource(resources, R.drawable.ship_normal);
@@ -70,24 +72,28 @@ public class Ship extends GameObject
      */
     public void SetPositionX(float posX)
     {
-        m_positionX = posX;
+        Transform tf = GetTransform();
+        tf.m_translate.x = posX;
+        SetTransform(tf);
     }
 
     public void SetPositionY(float posY)
     {
-        m_positionY = posY;
+        Transform tf = GetTransform();
+        tf.m_translate.y = posY;
+        SetTransform(tf);
     }
     /*
      * Getters
      */
     public float GetPositionX()
     {
-        return  m_positionX;
+        return GetTransform().m_translate.x;
     }
 
     public float GetPositionY()
     {
-        return m_positionY;
+        return GetTransform().m_translate.y;
     }
 
     public float GetScaleX()
@@ -128,8 +134,38 @@ public class Ship extends GameObject
         {
             bullet.Init(m_weapon.GetBulletTexture(), true, m_weapon.GetBulletVelocity());
             Transform tf = bullet.GetTransform();
-            tf.m_translate.Set(m_positionX, m_positionY);
+            tf.m_translate = GetTransform().m_translate;
             bullet.SetTransform(tf);
         }
+    }
+
+    public void DropHealth()
+    {
+        m_health--;
+
+        if (m_health < 0)
+        {
+            m_health = 0;
+        }
+    }
+
+    public void GainHealth()
+    {
+        m_health++;
+
+        if (m_health > MAX_LIVES)
+        {
+            m_health = MAX_LIVES;
+        }
+    }
+
+    public boolean IsAlive()
+    {
+        return m_health > 0;
+    }
+
+    public int GetHealth()
+    {
+        return m_health;
     }
 }

@@ -4,34 +4,31 @@ package kahwei.com.dm2230_mgp;
  * Created by xecli on 11/23/2015.
  */
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 
 import java.util.ArrayList;
-import java.util.ListIterator;
 
-import kahwei.com.dm2230_mgp.Object.Transform;
 import kahwei.com.dm2230_mgp.Object.Vector3;
 
 public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 {
 	// Implement this interface to receive information about changes to the surface.
 
-	private GameThread myThread = null; // Thread to control the rendering
+	private GameThread m_gameThread = null; // Thread to control the rendering
 
-	// 1a) Variables used for background rendering
+	// Bitmaps
 	private Bitmap bg;
 	private Bitmap scaledBG;
+	private Bitmap m_lifeTexture;
 	// 1b) Define Screen width and Screen height as integer
 	private Integer screenWidth;
 	private Integer screenHeight;
@@ -93,12 +90,19 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		// -- Load scaled version of the background
 		scaledBG = Bitmap.createScaledBitmap(bg, screenWidth, screenHeight, true);
 
+		// Load life bitmap
+		m_lifeTexture = BitmapFactory.decodeResource(getResources(), R.drawable.life);
+		// Generate the scaled version of this the life bitmap
+		m_lifeTexture = Bitmap.createScaledBitmap(m_lifeTexture, 100, 100, true);
+
 		// Initialize the Ship
 		m_ship = new Ship();
-		m_ship.Init(screenWidth * 0.5f, screenHeight * 0.85f, getResources());
+		Vector3 shipPos = new Vector3();
+		shipPos.Set(screenWidth * 0.5f, screenHeight * 0.85f);
+		m_ship.Init(shipPos, getResources());
 
 		// Create the game loop thread
-		myThread = new GameThread(getHolder(), this);
+		m_gameThread = new GameThread(getHolder(), this);
 
 		// Initialize the bullet list
 		m_bulletList = new ArrayList<Bullet>();
@@ -111,20 +115,20 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 	public void surfaceCreated(SurfaceHolder holder)
 	{
 		// Create the thread
-		if (!myThread.isAlive())
+		if (!m_gameThread.isAlive())
 		{
-			myThread = new GameThread(getHolder(), this);
-			myThread.startRun(true);
-			myThread.start();
+			m_gameThread = new GameThread(getHolder(), this);
+			m_gameThread.startRun(true);
+			m_gameThread.start();
 		}
 	}
 
 	public void surfaceDestroyed(SurfaceHolder holder)
 	{
 		// Destroy the thread
-		if (myThread.isAlive())
+		if (m_gameThread.isAlive())
 		{
-			myThread.startRun(false);
+			m_gameThread.startRun(false);
 
 
 		}
@@ -132,7 +136,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		while (retry)
 		{
 			try {
-				myThread.join();
+				m_gameThread.join();
 				retry = false;
 			}
 			catch (InterruptedException e)
@@ -172,6 +176,12 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 
 		// 4d) Draw the spaceships
 		m_ship.Draw(canvas);
+
+		// Draw the health
+		for (int lives = 1; lives <= m_ship.GetHealth(); ++lives)
+		{
+			canvas.drawBitmap(m_lifeTexture, screenWidth - m_lifeTexture.getWidth() * lives, 0, null);
+		}
 	}
 
 
@@ -223,6 +233,14 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 						}
 					}
 				}
+
+				// Kill the game if player lost
+				if (!m_ship.IsAlive())
+				{
+					// TODO: Go to a proper losing screen
+					Activity parentActivity = (Activity)getContext();
+					parentActivity.finish();
+				}
 			}
 			break;
 		}
@@ -241,12 +259,12 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 
 	public void Pause()
 	{
-		myThread.pause();
+		m_gameThread.pause();
 	}
 
 	public void Unpause()
 	{
-		myThread.unPause();
+		m_gameThread.unPause();
 	}
 
 	private void movePlayer(float xPos, float yPos)
@@ -307,4 +325,6 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 
 		return super.onTouchEvent(event);
 	}
+
+
 }

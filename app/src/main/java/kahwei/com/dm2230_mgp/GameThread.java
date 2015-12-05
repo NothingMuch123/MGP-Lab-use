@@ -125,4 +125,9 @@ public class GameThread extends Thread {
 			calculateFPS();
 		}
 	}
+
+	public void EndGame()
+	{
+		isRun = false;
+	}
 }
