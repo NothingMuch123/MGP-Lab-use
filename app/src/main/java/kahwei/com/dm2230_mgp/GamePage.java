@@ -7,6 +7,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 /**
@@ -28,6 +30,14 @@ public class GamePage extends Activity implements View.OnClickListener
 	// Confirmation Handling
 	private boolean confirmIsQuit;
 
+	// Options Pop Up
+	private LinearLayout menu_option;
+	private Button btn_option_back; // Back button
+	private RadioButton btn_fastGraphics, btn_fancyGraphics; // Graphical radio buttons
+	private SeekBar slider_musicVol; // Music volume slider
+	private SeekBar slider_sfxVol; // SFX volume slider
+	final Integer VOLUME_MAX = 100;
+
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -36,8 +46,11 @@ public class GamePage extends Activity implements View.OnClickListener
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		// hide status bar
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
+		// Set the game page as the game view
 		setContentView(R.layout.game_page);
+
+		// Pause Menu
+		menu_pause = (LinearLayout)findViewById(R.id.PauseMenu);
 		btn_pause = (Button)findViewById(R.id.pause_button);
 		btn_pause.setOnClickListener(this);
 		btn_resume = (Button)findViewById(R.id.btn_resume);
@@ -48,13 +61,40 @@ public class GamePage extends Activity implements View.OnClickListener
 		btn_reset.setOnClickListener(this);
 		btn_options = (Button)findViewById(R.id.btn_options);
 		btn_options.setOnClickListener(this);
+
+		// Confirmation Menu
+		menu_confirm = (LinearLayout)findViewById(R.id.ConfirmMenu);
 		btn_confirmYes = (Button)findViewById(R.id.btn_confirmYes);
 		btn_confirmYes.setOnClickListener(this);
 		btn_confirmNo = (Button)findViewById(R.id.btn_confirmNo);
 		btn_confirmNo.setOnClickListener(this);
-		menu_pause = (LinearLayout)findViewById(R.id.PauseMenu);
-		menu_confirm = (LinearLayout)findViewById(R.id.ConfirmMenu);
 		confirm_message = (TextView)findViewById(R.id.confirmMessage);
+
+		// Option Menu
+		// Get a handle to the Options Menu
+		menu_option = (LinearLayout)findViewById(R.id.OptionsMenu);
+		// Set up event listeners for buttons
+		btn_option_back = (Button) findViewById(R.id.btn_option_back);
+		btn_option_back.setOnClickListener(this);
+		btn_fastGraphics = (RadioButton) findViewById(R.id.btn_fast);
+		btn_fastGraphics.setOnClickListener(this);
+		btn_fancyGraphics = (RadioButton) findViewById(R.id.btn_fancy);
+		btn_fancyGraphics.setOnClickListener(this);
+		btn_fancyGraphics.setChecked(true);
+
+		// Set up event listeners for sliders
+		slider_musicVol = (SeekBar)findViewById(R.id.slider_musicVol);
+		slider_musicVol.setOnClickListener(this);
+		slider_sfxVol = (SeekBar)findViewById(R.id.slider_sfxVol);
+		slider_sfxVol.setOnClickListener(this);
+
+		// Assign seekbar default values and max value
+		slider_musicVol.setMax(VOLUME_MAX);
+		slider_musicVol.setProgress(VOLUME_MAX);
+		slider_sfxVol.setMax(VOLUME_MAX);
+		slider_sfxVol.setProgress(VOLUME_MAX);
+
+		// The game itself
 		game_surface = (GamePanelSurfaceView)findViewById(R.id.game_view);
 	}
 
@@ -78,7 +118,7 @@ public class GamePage extends Activity implements View.OnClickListener
 		}
 		else if (v == btn_options)
 		{
-			// TODO
+			menu_option.setVisibility(View.VISIBLE);
 		}
 		else if (v == btn_reset)
 		{
@@ -112,6 +152,12 @@ public class GamePage extends Activity implements View.OnClickListener
 		{
 			// Close this menu
 			menu_confirm.setVisibility(View.GONE);
+		}
+		// Options Menu
+		else if (v == btn_option_back)
+		{
+			// Close this menu
+			menu_option.setVisibility(View.GONE);
 		}
 	}
 

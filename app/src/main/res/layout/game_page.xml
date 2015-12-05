@@ -151,6 +151,163 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#80000000"
+        android:id="@+id/OptionsMenu"
+        android:weightSum="1.0"
+        android:baselineAligned="false"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0px"
+            android:background="#5b9bd5"
+            android:id="@+id/OptionsMenuSeparatorTop"
+            android:layout_weight="0.02">
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0px"
+            android:background="#595959"
+            android:id="@+id/OptionsMenuComponents"
+            android:layout_weight="0.58">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="OPTIONS"
+                android:id="@+id/textView"
+                android:layout_alignParentTop="true"
+                android:textAlignment="center"
+                android:textSize="70dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="10dp" />
+
+            <Button
+                android:id="@+id/btn_option_back"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginTop="0dp"
+                android:text="&lt;"
+                android:textColor="#ffffff"
+                android:singleLine="false"
+                android:background="@drawable/back_button"
+                android:layout_gravity="right"
+                android:layout_marginBottom="20dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentTop="false"
+                android:textSize="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginLeft="25dp" />
+
+            <SeekBar
+                android:id="@+id/slider_musicVol"
+                android:layout_width="190dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="25dp"
+                android:layout_below="@+id/textView" />
+
+            <SeekBar
+                android:id="@+id/slider_sfxVol"
+                android:layout_width="190dp"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/slider_musicVol"
+                android:layout_marginBottom="15dp"
+                android:layout_below="@+id/slider_musicVol" />
+
+            <RadioGroup
+                android:id="@+id/graphics"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/slider_sfxVol"
+                android:orientation="horizontal"
+                android:layout_marginBottom="15dp"
+                android:layout_below="@+id/slider_sfxVol">
+
+                <RadioButton
+                    android:id="@+id/btn_fast"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fast"
+                    android:textSize="25dp"
+                    android:layout_marginRight="5dp" />
+
+                <RadioButton
+                    android:id="@+id/btn_fancy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fancy"
+                    android:textSize="25dp"
+                    android:layout_marginEnd="5dp" />
+
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/musicVol_Text"
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:text="Music:"
+                android:gravity="right"
+                android:textAlignment="gravity"
+                android:textColor="#FFFFFF"
+                android:textSize="25dp"
+                android:backgroundTint="@android:color/transparent"
+                android:layout_alignTop="@+id/slider_musicVol"
+                android:layout_marginLeft="15dp" />
+
+            <TextView
+                android:id="@+id/sfxVol_Text"
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:text="SFX:"
+                android:gravity="right"
+                android:textAlignment="gravity"
+                android:textColor="#FFFFFF"
+                android:textSize="25dp"
+                android:backgroundTint="@android:color/transparent"
+                android:layout_alignTop="@+id/slider_sfxVol"
+                android:layout_marginLeft="15dp" />
+
+            <TextView
+                android:id="@+id/graphics_Text"
+                android:layout_width="110dp"
+                android:layout_height="wrap_content"
+                android:text="Graphics:"
+                android:gravity="right"
+                android:textAlignment="gravity"
+                android:textColor="#FFFFFF"
+                android:textSize="25dp"
+                android:backgroundTint="@android:color/transparent"
+                android:layout_alignTop="@+id/graphics"
+                android:layout_alignParentStart="true"
+                android:paddingTop="10dp"
+                android:layout_marginLeft="15dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0px"
+            android:background="#5b9bd5"
+            android:id="@+id/OptionsMenuSeparatorBot"
+            android:layout_weight="0.02">
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0px"
+            android:id="@+id/OptionsMenuBlank"
+            android:layout_weight="0.38">
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
         android:id="@+id/ConfirmMenu"
         android:weightSum="1.0"
         android:baselineAligned="false"
