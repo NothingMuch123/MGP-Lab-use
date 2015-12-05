@@ -7,6 +7,13 @@ public class Transform
 {
     private Vector3 m_translate, m_rotate, m_scale;
 
+    public Transform()
+    {
+        m_translate = new Vector3();
+        m_rotate = new Vector3();
+        m_scale = new Vector3();
+    }
+
     public void Init(Vector3 translate, Vector3 rotate, Vector3 scale)
     {
         this.m_translate = translate;
