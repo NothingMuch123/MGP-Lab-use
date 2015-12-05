@@ -10,6 +10,11 @@ public class Object extends Collider
     private Bitmap m_mesh;
     private boolean m_render, m_active;
 
+    public Object()
+    {
+        super();
+    }
+
     public void Init(Bitmap mesh, boolean active, boolean render)
     {
         this.m_mesh = mesh;

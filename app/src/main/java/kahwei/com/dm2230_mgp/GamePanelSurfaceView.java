@@ -43,6 +43,9 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 	// Ship
 	Ship m_ship;
 
+	// Enemy list
+	private ArrayList<EnemyShip> m_enemyList;
+
 	// Bullets
 	private ArrayList<Bullet> m_bulletList;
 
@@ -106,6 +109,11 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 
 		// Initialize the bullet list
 		m_bulletList = new ArrayList<Bullet>();
+
+		// Initialize the enemy list
+		EnemyShip.CreateEnemyMesh(getResources());
+		m_enemyList = new ArrayList<EnemyShip>();
+		fetchEnemy().Init(screenWidth, screenHeight, getResources());
 
 		// Make the GamePanel focusable so it can handle events
 		setFocusable(true);
@@ -174,6 +182,16 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 			}
 		}
 
+		// Draw the enemies
+		for (int e = 0; e < m_enemyList.size(); ++e)
+		{
+			EnemyShip enemy = m_enemyList.get(e);
+			if (enemy.GetRender())
+			{
+				enemy.Draw(canvas);
+			}
+		}
+
 		// 4d) Draw the spaceships
 		m_ship.Draw(canvas);
 
@@ -231,6 +249,16 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 						{
 							bullet.SetActive(false);
 						}
+					}
+				}
+
+				// Update all enemies
+				for (int e = 0; e < m_enemyList.size(); ++e)
+				{
+					EnemyShip enemy = m_enemyList.get(e);
+					if (enemy.GetActive())
+					{
+						enemy.Update(dt, screenWidth, screenHeight);
 					}
 				}
 
@@ -306,6 +334,28 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		}
 
 		return m_bulletList.get(m_bulletList.size()-1);
+	}
+
+	private EnemyShip fetchEnemy()
+	{
+		for (EnemyShip e : m_enemyList)
+		{
+			if (e.GetActive() == false)
+			{
+				return e;
+			}
+		}
+
+		// Not enough enemies
+		final int BATCH_PRODUCE = 10;
+		for (int b = 0; b < BATCH_PRODUCE; ++b)
+		{
+			EnemyShip e = new EnemyShip();
+			//e.Init(screenWidth, screenHeight, getResources());
+			m_enemyList.add(e);
+		}
+
+		return m_enemyList.get(m_enemyList.size()-1);
 	}
 
 	@Override

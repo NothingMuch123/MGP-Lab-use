@@ -59,6 +59,8 @@ public class Ship extends GameObject
 
         // Load default weapon
         m_weapon = new NormalWeapon(resources);
+
+        //super.Init(m_shipTexture[m_power.ordinal()], true, true);
     }
 
     @Override

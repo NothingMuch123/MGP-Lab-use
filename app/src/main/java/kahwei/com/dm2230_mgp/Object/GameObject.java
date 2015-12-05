@@ -20,6 +20,10 @@ public class GameObject extends Object
     {
         super.Init(mesh, active, render);
         m_transform = new Transform();
+        if (mesh != null)
+        {
+            m_transform.m_scale.Set(mesh.getWidth(), mesh.getHeight(), 1.f);
+        }
     }
 
     public void Update(final double dt)
@@ -29,7 +33,6 @@ public class GameObject extends Object
     public void Reset()
     {
         super.Reset();
-        //CCollider::Reset();
         m_transform.Reset();
     }
 
