@@ -17,6 +17,12 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.ListIterator;
+
+import kahwei.com.dm2230_mgp.Object.Transform;
+import kahwei.com.dm2230_mgp.Object.Vector3;
+
 public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 {
 	// Implement this interface to receive information about changes to the surface.
@@ -35,9 +41,13 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 	private final float BG_SCROLL_SPEED = 500;
 	// 4b) Variable as an index to keep track of the spaceship images
 	private Integer shipIndex = 0;
+	private boolean m_attemptShoot = false;
 
 	// Ship
 	Ship m_ship;
+
+	// Bullets
+	private ArrayList<Bullet> m_bulletList;
 
 	// Variables for FPS
 	public float FPS;
@@ -89,6 +99,9 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 
 		// Create the game loop thread
 		myThread = new GameThread(getHolder(), this);
+
+		// Initialize the bullet list
+		m_bulletList = new ArrayList<Bullet>();
 
 		// Make the GamePanel focusable so it can handle events
 		setFocusable(true);
@@ -146,11 +159,19 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		canvas.drawBitmap(scaledBG, bgX, bgY, null);
 		canvas.drawBitmap(scaledBG, bgX, bgY - screenHeight, null);
 
+		// Draw the bullets
+		for (int b = 0; b < m_bulletList.size(); ++b)
+		{
+			Bullet bullet = m_bulletList.get(b);
+
+			if (bullet.GetActive())
+			{
+				bullet.Draw(canvas);
+			}
+		}
+
 		// 4d) Draw the spaceships
 		m_ship.Draw(canvas);
-
-		// Bonus) To print FPS on the screen
-
 	}
 
 
@@ -170,6 +191,37 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 				if (bgY > screenHeight)
 				{
 					bgY = 0;
+				}
+
+				// Update the Ship
+				m_ship.Update(dt);
+
+				// Update the Shooting
+				if (m_attemptShoot)
+				{
+					m_ship.Shoot(fetchBullet());
+				}
+
+				// Update all the bullets
+				for (int b = 0; b < m_bulletList.size(); ++b)
+				{
+					Bullet bullet = m_bulletList.get(b);
+
+					if (bullet.GetActive())
+					{
+						bullet.Update(dt);
+
+						Vector3 bulletPos = bullet.GetTransform().GetTranslate();
+
+						if (
+							bulletPos.x < 0.0f || bulletPos.x > screenWidth
+							||
+							bulletPos.y < 0.0f || bulletPos.y > screenHeight
+							)
+						{
+							bullet.SetActive(false);
+						}
+					}
 				}
 			}
 			break;
@@ -216,6 +268,28 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		}
 	}
 
+	private Bullet fetchBullet()
+	{
+		for (Bullet b : m_bulletList)
+		{
+			if (b.GetActive() == false)
+			{
+				return b;
+			}
+		}
+
+		// Not enough bullets
+		final int BATCH_PRODUCE = 30;
+		for (int b = 0; b < BATCH_PRODUCE; ++b)
+		{
+			Bullet bullet = new Bullet();
+			bullet.Init(null, false, true);
+			m_bulletList.add(bullet);
+		}
+
+		return m_bulletList.get(m_bulletList.size()-1);
+	}
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
@@ -224,6 +298,10 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 			case MotionEvent.ACTION_DOWN:
 			case MotionEvent.ACTION_MOVE:
 				movePlayer(event.getX(), event.getY());
+				m_attemptShoot = true;
+				return true;
+			case MotionEvent.ACTION_UP:
+				m_attemptShoot = false;
 				return true;
 		}
 

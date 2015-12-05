@@ -5,7 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 
+import java.util.ArrayList;
+
 import kahwei.com.dm2230_mgp.Object.GameObject;
+import kahwei.com.dm2230_mgp.Object.Transform;
+import kahwei.com.dm2230_mgp.Object.Vector3;
 
 /**
  * Created by xecli on 11/26/2015.
@@ -26,10 +30,9 @@ public class Ship extends GameObject
         PT_SPIKE
     };
     private PowerType m_power;
-    private int m_powerLevel;
-    private final int MAX_POWER_LEVEL = 3;
     private Bitmap m_shipTexture[];
     private Bitmap m_rankTexture;
+    private Weapon m_weapon;
 
     Ship()
     {
@@ -38,17 +41,28 @@ public class Ship extends GameObject
 
     public void Init(float posX, float posY, Resources resources)
     {
+        // Initialize variables
         m_defaultPosX = m_positionX = posX;
         m_defaultPosY = m_positionY = posY;
         m_shipTexture = new Bitmap[PowerType.values().length];
         m_power = PowerType.PT_NORMAL;
-        m_powerLevel = 1;
 
+        // Load Ship Textures
         m_shipTexture[PowerType.PT_NORMAL.ordinal()] = BitmapFactory.decodeResource(resources, R.drawable.ship_normal);
         m_shipTexture[PowerType.PT_BEAM.ordinal()] = BitmapFactory.decodeResource(resources, R.drawable.ship_beam);
         m_shipTexture[PowerType.PT_SPIKE.ordinal()] = BitmapFactory.decodeResource(resources, R.drawable.ship_spike);
 
+        // Load Rank Texture
         m_rankTexture = BitmapFactory.decodeResource(resources, R.drawable.rank);
+
+        // Load default weapon
+        m_weapon = new NormalWeapon(resources);
+    }
+
+    @Override
+    public void Update(final double dt)
+    {
+        m_weapon.Update(dt);
     }
 
     /*
@@ -101,10 +115,23 @@ public class Ship extends GameObject
         // Draw the Ship
         canvas.drawBitmap(GetMesh(), shipDrawPosX, shipDrawPosY, null);
 
-        for (int rankDrawn = 0; rankDrawn < m_powerLevel; ++rankDrawn)
+        for (int rankDrawn = 0; rankDrawn < m_weapon.GetPowerLevel(); ++rankDrawn)
         {
             canvas.drawBitmap(m_rankTexture, GetPositionX() - m_rankTexture.getWidth() * 0.5f, rankDrawPosY, null);
             rankDrawPosY += m_rankTexture.getHeight() * 0.4f;
+        }
+    }
+
+    public void Shoot(Bullet bullet)
+    {
+        if (m_weapon.Shoot())
+        {
+            bullet.Init(m_weapon.GetBulletTexture(), true, m_weapon.GetBulletVelocity());
+            Transform tf = bullet.GetTransform();
+            Vector3 shipPos = new Vector3();
+            shipPos.Set(m_positionX, m_positionY);
+            tf.SetTranslate(shipPos);
+            bullet.SetTransform(tf);
         }
     }
 }

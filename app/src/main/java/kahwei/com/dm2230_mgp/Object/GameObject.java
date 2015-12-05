@@ -1,6 +1,7 @@
 package kahwei.com.dm2230_mgp.Object;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 
 /**
  * Created by Koh Fang Shu on 5/12/2015.
@@ -35,5 +36,16 @@ public class GameObject extends Object
     public Transform GetTransform()
     {
         return m_transform;
+    }
+    public void SetTransform(Transform tf)
+    {
+        m_transform = tf;
+    }
+    public void Draw(Canvas canvas)
+    {
+        Vector3 tf = GetTransform().GetTranslate();
+        Bitmap tex = GetMesh();
+
+        canvas.drawBitmap(tex, tf.x - tex.getWidth() * 0.5f, tf.y - tex.getWidth() * 0.5f, null);
     }
 }
