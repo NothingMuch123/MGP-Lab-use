@@ -197,23 +197,34 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		myThread.unPause();
 	}
 
+	private void movePlayer(float xPos, float yPos)
+	{
+		final float HIT_AREA_SCALER = 2;
+		float touchHitAreaStartX = m_ship.GetPositionX() - m_ship.GetScaleX() * HIT_AREA_SCALER;
+		float touchHitAreaStartY = m_ship.GetPositionY() - m_ship.GetScaleY()* HIT_AREA_SCALER;
+		float touchHitAreaEndX = m_ship.GetPositionX() + m_ship.GetScaleX()* HIT_AREA_SCALER;
+		float touchHitAreaEndY = m_ship.GetPositionY() + m_ship.GetScaleY()* HIT_AREA_SCALER;
+
+		if (
+				xPos >=  touchHitAreaStartX && xPos <= touchHitAreaEndX
+               	&&
+				yPos >= touchHitAreaStartY && yPos <= touchHitAreaEndY
+			)
+		{
+			m_ship.SetPositionX(xPos);
+			m_ship.SetPositionY(yPos - m_ship.GetScaleY());
+		}
+	}
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
-		if (event.getAction() == MotionEvent.ACTION_MOVE)
+		switch (event.getAction())
 		{
-			// Determine if it is on or around the ship
-			float touchX = event.getX();
-			float touchY = event.getY();
-//			if (
-//					touchX >= m_ship.GetPositionX() - m_ship.GetScaleX() && touchX <= m_ship.GetPositionX() + m_ship.GetScaleX()
-//					&&
-//					touchY >= m_ship.GetPositionY() - m_ship.GetScaleY() && touchY <= m_ship.GetPositionY() + m_ship.GetScaleY()
-//				)
-			{
-				m_ship.SetPositionX(touchX);
-				m_ship.SetPositionY(touchY);
-			}
+			case MotionEvent.ACTION_DOWN:
+			case MotionEvent.ACTION_MOVE:
+				movePlayer(event.getX(), event.getY());
+				return true;
 		}
 
 		return super.onTouchEvent(event);
