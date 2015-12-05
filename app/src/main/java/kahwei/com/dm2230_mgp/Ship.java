@@ -128,9 +128,7 @@ public class Ship extends GameObject
         {
             bullet.Init(m_weapon.GetBulletTexture(), true, m_weapon.GetBulletVelocity());
             Transform tf = bullet.GetTransform();
-            Vector3 shipPos = new Vector3();
-            shipPos.Set(m_positionX, m_positionY);
-            tf.SetTranslate(shipPos);
+            tf.m_translate.Set(m_positionX, m_positionY);
             bullet.SetTransform(tf);
         }
     }

@@ -155,20 +155,18 @@ public class Collider
 
     void calcAABB(Transform transform)
     {
-        Vector3 pos = transform.GetTranslate();
-        Vector3 scale = transform.GetScale();
         switch (m_yStart)
         {
             case Y_BOTTOM:
             {
-                m_minBound.Set(pos.x - (scale.x * 0.5f), pos.y, pos.z - (scale.z * 0.5f));
-                m_maxBound.Set(pos.x + (scale.x * 0.5f), pos.y + scale.y, pos.z + (scale.z * 0.5f));
+                m_minBound.Set(transform.m_translate.x - (transform.m_scale.x * 0.5f), transform.m_translate.y, transform.m_translate.z - (transform.m_scale.z * 0.5f));
+                m_maxBound.Set(transform.m_translate.x + (transform.m_scale.x * 0.5f), transform.m_translate.y + transform.m_scale.y, transform.m_translate.z + (transform.m_scale.z * 0.5f));
             }
             break;
             case Y_MIDDLE:
             {
-                m_minBound.Set(pos.x - (scale.x * 0.5f), pos.y - (scale.y * 0.5f), pos.z - (scale.z * 0.5f));
-                m_maxBound.Set(pos.x + (scale.x * 0.5f), pos.y + (scale.y * 0.5f), pos.z + (scale.z * 0.5f));
+                m_minBound.Set(transform.m_translate.x - (transform.m_scale.x * 0.5f), transform.m_translate.y - (transform.m_scale.y * 0.5f), transform.m_translate.z - (transform.m_scale.z * 0.5f));
+                m_maxBound.Set(transform.m_translate.x + (transform.m_scale.x * 0.5f), transform.m_translate.y + (transform.m_scale.y * 0.5f), transform.m_translate.z + (transform.m_scale.z * 0.5f));
             }
             break;
         }
@@ -176,8 +174,8 @@ public class Collider
 
     void calcDist(Transform transform)
     {
-        m_diameter = transform.GetScale();
-        m_position = transform.GetTranslate();
+        m_diameter = transform.m_scale;
+        m_position = transform.m_translate;
     }
 
     boolean AABBCollision(Collider other, final double dt)

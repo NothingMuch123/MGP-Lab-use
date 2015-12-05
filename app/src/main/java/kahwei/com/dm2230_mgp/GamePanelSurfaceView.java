@@ -211,7 +211,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 					{
 						bullet.Update(dt);
 
-						Vector3 bulletPos = bullet.GetTransform().GetTranslate();
+						Vector3 bulletPos = bullet.GetTransform().m_translate;
 
 						if (
 							bulletPos.x < 0.0f || bulletPos.x > screenWidth
