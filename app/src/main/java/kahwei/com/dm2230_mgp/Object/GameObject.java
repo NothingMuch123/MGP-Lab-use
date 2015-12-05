@@ -9,8 +9,9 @@ public class GameObject extends Object
 {
     private Transform m_transform;
 
-    GameObject()
+    public GameObject()
     {
+        super();
         m_transform = new Transform();
     }
 
