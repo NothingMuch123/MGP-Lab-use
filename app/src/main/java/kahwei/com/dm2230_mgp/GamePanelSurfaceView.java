@@ -17,6 +17,7 @@ import android.view.SurfaceView;
 
 import java.util.ArrayList;
 
+import kahwei.com.dm2230_mgp.Object.GameObject;
 import kahwei.com.dm2230_mgp.Object.Vector3;
 
 public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.Callback
@@ -43,11 +44,14 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 	// Ship
 	Ship m_ship;
 
-	// Enemy list
-	private ArrayList<EnemyShip> m_enemyList;
-
+	// All GameObjects stored in this list including bullets and powerups
+	private ArrayList<GameObject> m_goList;
 	// Bullets
 	private ArrayList<Bullet> m_bulletList;
+	// Powerup List
+	private ArrayList<PowerUp> m_powerUpList;
+	// Enemy list
+	private ArrayList<EnemyShip> m_enemyList;
 
 	// Variables for FPS
 	public float FPS;
@@ -107,8 +111,24 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		// Create the game loop thread
 		m_gameThread = new GameThread(getHolder(), this);
 
+		// Initialize game object list
+		m_goList = new ArrayList<GameObject>();
+
 		// Initialize the bullet list
 		m_bulletList = new ArrayList<Bullet>();
+
+		// Initialize the power up list
+		m_powerUpList = new ArrayList<PowerUp>();
+
+		// TODO: Remove this testing code for lives
+		LifePowerUp pwup = new LifePowerUp();
+		Vector3 pos = new Vector3();
+		pos.Set(screenWidth * 0.5f, screenHeight * 0.5f);
+		Vector3 vel = new Vector3();
+		vel.Set(-25.0f, 100.0f);
+		pwup.Init(m_lifeTexture, true, true, pos, vel);
+		m_goList.add(pwup);
+		m_powerUpList.add(pwup);
 
 		// Initialize the enemy list
 		EnemyShip.CreateEnemyMesh(getResources());
@@ -171,14 +191,14 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		canvas.drawBitmap(scaledBG, bgX, bgY, null);
 		canvas.drawBitmap(scaledBG, bgX, bgY - screenHeight, null);
 
-		// Draw the bullets
-		for (int b = 0; b < m_bulletList.size(); ++b)
+		// Draw game objects
+		for (int go = 0; go < m_goList.size(); ++go)
 		{
-			Bullet bullet = m_bulletList.get(b);
+			GameObject gameObject = m_goList.get(go);
 
-			if (bullet.GetActive())
+			if (gameObject.GetActive())
 			{
-				bullet.Draw(canvas);
+				gameObject.Draw(canvas);
 			}
 		}
 
@@ -230,24 +250,26 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 					m_ship.Shoot(fetchBullet());
 				}
 
-				// Update all the bullets
-				for (int b = 0; b < m_bulletList.size(); ++b)
+				// Update all the gameobjects
+				for (int b = 0; b < m_goList.size(); ++b)
 				{
-					Bullet bullet = m_bulletList.get(b);
+					GameObject gameObject = m_goList.get(b);
 
-					if (bullet.GetActive())
+					if (gameObject.GetActive())
 					{
-						bullet.Update(dt);
+						gameObject.Update(dt);
 
-						Vector3 bulletPos = bullet.GetTransform().m_translate;
+						Vector3 goPos = gameObject.GetTransform().m_translate;
+						Vector3 goScale = gameObject.GetTransform().m_scale;
 
+						// Check for out of screen
 						if (
-							bulletPos.x < 0.0f || bulletPos.x > screenWidth
+							goPos.x < -goScale.x || goPos.x > screenWidth + goScale.x
 							||
-							bulletPos.y < 0.0f || bulletPos.y > screenHeight
+							goPos.y < -goScale.y || goPos.y > screenHeight + goScale.y
 							)
 						{
-							bullet.SetActive(false);
+							gameObject.SetActive(false);
 						}
 					}
 				}
@@ -331,6 +353,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 			Bullet bullet = new Bullet();
 			bullet.Init(null, false, true);
 			m_bulletList.add(bullet);
+			m_goList.add(bullet);
 		}
 
 		return m_bulletList.get(m_bulletList.size()-1);

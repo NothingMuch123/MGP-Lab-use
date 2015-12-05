@@ -114,6 +114,7 @@ public class Ship extends GameObject
         return m_shipTexture[m_power.ordinal()];
     }
 
+    @Override
     public void Draw(Canvas canvas)
     {
         float shipDrawPosX = GetPositionX() - GetScaleX() * 0.5f;
