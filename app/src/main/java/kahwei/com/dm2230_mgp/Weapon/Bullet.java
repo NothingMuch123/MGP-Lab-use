@@ -15,6 +15,7 @@ public class Bullet extends GameObject
 
     public Bullet()
     {
+        super();
         m_velocity = new Vector3();
         m_velocity.Set(0.0f, 0.0f, 0.0f);
         SetActive(false);
@@ -35,6 +36,7 @@ public class Bullet extends GameObject
     public void Update(final double dt)
     {
         // Update the bullet position
+        super.Update(dt);
         Transform tf = GetTransform();
         tf.m_translate = tf.m_translate.Add(m_velocity.ScalarMultiply((float)dt));
         SetTransform(tf);
