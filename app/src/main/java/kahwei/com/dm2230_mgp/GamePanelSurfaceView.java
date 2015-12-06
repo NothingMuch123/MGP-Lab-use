@@ -364,6 +364,8 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 						// Destroy the bullet
 						bullet.SetActive(false);
 						bullet.SetRender(false);
+						// Player is killed, no point checking again
+						break;
 					}
 				}
 
