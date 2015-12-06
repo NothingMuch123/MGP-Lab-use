@@ -33,7 +33,7 @@ public class Ship extends GameObject
         PT_SPIKE
     };
     private PowerType m_power;
-    private Weapon m_weapon;
+    private Weapon m_weapon[];
 
     // Textures
     private Bitmap m_shipTexture[];
@@ -69,8 +69,11 @@ public class Ship extends GameObject
         // Load Rank Texture
         m_rankTexture = BitmapFactory.decodeResource(resources, R.drawable.rank);
 
-        // Load default weapon
-        m_weapon = new NormalWeapon(resources);
+        // Load weapons
+        m_weapon = new Weapon[PowerType.values().length];
+        m_weapon[PowerType.PT_NORMAL.ordinal()] = new NormalWeapon(resources);
+        m_weapon[PowerType.PT_BEAM.ordinal()] = new BeamWeapon(resources);
+        m_weapon[PowerType.PT_SPIKE.ordinal()] = new SpikeWeapon(resources);
 
         super.Init(m_shipTexture[m_power.ordinal()], true, true);
     }
@@ -81,7 +84,7 @@ public class Ship extends GameObject
         // Update the collision
         super.Update(dt);
         // Update the weapon
-        m_weapon.Update(dt);
+        getCurrentWeapon().Update(dt);
         // Update the rocket animation
         m_rocketAnim.update(System.currentTimeMillis());
     }
@@ -125,6 +128,8 @@ public class Ship extends GameObject
         return GetMesh().getHeight();
     }
 
+    private Weapon getCurrentWeapon() { return m_weapon[m_power.ordinal()]; }
+
     @Override
     public Bitmap GetMesh()
     {
@@ -140,13 +145,13 @@ public class Ship extends GameObject
 
         // Draw the rocket behind the ship
         m_rocketAnim.setX((int)(GetPositionX() - m_rocketAnim.getSpriteWidth() * 0.5f));
-        m_rocketAnim.setY((int) (rankDrawPosY + (m_rankTexture.getHeight() * 0.4f) * (m_weapon.GetPowerLevel() + 1) + m_rocketAnim.getSpriteHeight() * 0.4f));
+        m_rocketAnim.setY((int) (rankDrawPosY + (m_rankTexture.getHeight() * 0.4f) * (getCurrentWeapon().GetPowerLevel() + 1) + m_rocketAnim.getSpriteHeight() * 0.4f));
         m_rocketAnim.draw(canvas);
 
         // Draw the Ship
         canvas.drawBitmap(GetMesh(), shipDrawPosX, shipDrawPosY, null);
 
-        for (int rankDrawn = 0; rankDrawn <= m_weapon.GetPowerLevel(); ++rankDrawn)
+        for (int rankDrawn = 0; rankDrawn <= getCurrentWeapon().GetPowerLevel(); ++rankDrawn)
         {
             canvas.drawBitmap(m_rankTexture, GetPositionX() - m_rankTexture.getWidth() * 0.5f, rankDrawPosY, null);
             rankDrawPosY += m_rankTexture.getHeight() * 0.4f;
@@ -155,7 +160,7 @@ public class Ship extends GameObject
 
     public void Shoot(ArrayList<Bullet> bullets)
     {
-        ArrayList<ShotData> shotDatas = m_weapon.GetShotDatas();
+        ArrayList<ShotData> shotDatas = getCurrentWeapon().GetShotDatas();
 
         // Don't shoot if not enough bullets
         if (bullets.size() < shotDatas.size())
@@ -164,7 +169,7 @@ public class Ship extends GameObject
         }
 
         // We got enough bullets, now lets shoot them all out
-        if (m_weapon.Shoot())
+        if (getCurrentWeapon().Shoot())
         {
             int bInfo = 0;
 
@@ -172,7 +177,7 @@ public class Ship extends GameObject
             for (; bInfo < shotDatas.size(); ++ bInfo)
             {
                 Bullet bullet = bullets.get(bInfo);
-                bullet.Init(m_weapon.GetBulletTexture(), true, shotDatas.get(bInfo).m_velocity);
+                bullet.Init(getCurrentWeapon().GetBulletTexture(), true, shotDatas.get(bInfo).m_velocity);
                 Transform tf = bullet.GetTransform();
                 tf.m_translate = GetTransform().m_translate.Add(shotDatas.get(bInfo).m_centerOffset);
                 bullet.SetTransform(tf);
@@ -210,7 +215,23 @@ public class Ship extends GameObject
 
     public void RankUp()
     {
-        m_weapon.LevelUp();
+        getCurrentWeapon().LevelUp();
+    }
+
+    public void ChangeWeapon(PowerType pType)
+    {
+        // Only change if it is the same
+        if (pType == m_power)
+        {
+            return;
+        }
+
+        // Set new weapon to old weapon's level
+        m_weapon[pType.ordinal()].LevelUp(getCurrentWeapon().GetPowerLevel());
+        // Reset this weapon
+        getCurrentWeapon().ResetLevel();
+        // Switch the weapon
+        m_power = pType;
     }
 
     public boolean IsAlive()

@@ -54,14 +54,26 @@ public class Weapon
         m_powerLevel = 1;
     }
 
-    public void LevelUp()
+    private void clampLevel()
     {
-        m_powerLevel = ++m_powerLevel;
-
         if (m_powerLevel >= MAX_POWER_LEVEL)
         {
             m_powerLevel = MAX_POWER_LEVEL - 1;
         }
+    }
+
+    public void LevelUp()
+    {
+        m_powerLevel = ++m_powerLevel;
+
+        clampLevel();
+    }
+
+    public void LevelUp(int levelsToUp)
+    {
+        m_powerLevel = m_powerLevel + levelsToUp;
+
+        clampLevel();
     }
 
     public Bitmap GetBulletTexture()

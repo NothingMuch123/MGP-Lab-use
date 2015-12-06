@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import kahwei.com.dm2230_mgp.Object.GameObject;
 import kahwei.com.dm2230_mgp.Object.Vector3;
+import kahwei.com.dm2230_mgp.PowerUp.AugmentPowerUp;
 import kahwei.com.dm2230_mgp.PowerUp.LifePowerUp;
 import kahwei.com.dm2230_mgp.PowerUp.PowerUp;
 import kahwei.com.dm2230_mgp.PowerUp.RankPowerUp;
@@ -134,12 +135,13 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		m_powerUpList = new ArrayList<PowerUp>();
 
 		// TODO: Remove this testing code for lives
-		PowerUp pwup = new RankPowerUp();
+		PowerUp pwup = new AugmentPowerUp();
 		Vector3 pos = new Vector3();
 		pos.Set(screenWidth * 0.5f, screenHeight * 0.5f);
 		Vector3 vel = new Vector3();
 		vel.Set(-25.0f, 100.0f);
-		pwup.Init(BitmapFactory.decodeResource(getResources(), R.drawable.rank), true, true, pos, vel);
+		AugmentPowerUp apwup = (AugmentPowerUp)pwup;
+		apwup.Init(BitmapFactory.decodeResource(getResources(), R.drawable.spike_augment), true, true, pos, vel, Ship.PowerType.PT_SPIKE);
 		m_goList.add(pwup);
 		m_powerUpList.add(pwup);
 
