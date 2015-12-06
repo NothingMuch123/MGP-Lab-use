@@ -78,11 +78,11 @@ public class Collider
     }
 
     void SetIgnore(boolean x, boolean y, boolean z)
-{
-    m_ignore[E_IGNORE_AXIS.IGNORE_X.ordinal()] = x;
-    m_ignore[E_IGNORE_AXIS.IGNORE_Y.ordinal()] = y;
-    m_ignore[E_IGNORE_AXIS.IGNORE_Z.ordinal()] = z;
-}
+    {
+        m_ignore[E_IGNORE_AXIS.IGNORE_X.ordinal()] = x;
+        m_ignore[E_IGNORE_AXIS.IGNORE_Y.ordinal()] = y;
+        m_ignore[E_IGNORE_AXIS.IGNORE_Z.ordinal()] = z;
+    }
 
     boolean GetIgnore(E_IGNORE_AXIS index)
 {
@@ -90,39 +90,40 @@ public class Collider
 }
 
     void Init(E_COLLIDER_TYPE type, Transform transform, E_Y_START yStart, boolean active)
-{
-    this.m_type = type;
-    calcAABB(transform);
-    calcDist(transform);
-    this.m_yStart = yStart;
-    this.m_active = active;
-}
+    {
+        this.m_type = type;
+        calcAABB(transform);
+        calcDist(transform);
+        this.m_yStart = yStart;
+        this.m_active = active;
+    }
 
     void Update(Transform transform)
-{
-    calcAABB(transform);
-    calcDist(transform);
-}
+    {
+        calcAABB(transform);
+        calcDist(transform);
+    }
 
     void Reset()
-{
-    m_minBound = Vector3.ZERO_VECTOR;
-    m_maxBound = Vector3.ZERO_VECTOR;
-    m_position = Vector3.ZERO_VECTOR;
-    m_diameter.Set(1.f, 1.f, 1.f);
-    m_type = E_COLLIDER_TYPE.CT_AABB;
-    m_yStart = E_Y_START.Y_BOTTOM;
-    for (int i = 0; i < E_IGNORE_AXIS.NUM_IGNORE.ordinal(); ++i)
     {
-        m_ignore[i] = false;
+        m_minBound = Vector3.ZERO_VECTOR;
+        m_maxBound = Vector3.ZERO_VECTOR;
+        m_position = Vector3.ZERO_VECTOR;
+        m_diameter.Set(1.f, 1.f, 1.f);
+        m_type = E_COLLIDER_TYPE.CT_AABB;
+        m_yStart = E_Y_START.Y_BOTTOM;
+        for (int i = 0; i < E_IGNORE_AXIS.NUM_IGNORE.ordinal(); ++i)
+        {
+            m_ignore[i] = false;
+        }
+        m_active = true;
     }
-    m_active = true;
-}
 
     boolean CollideWith(Collider other, final double dt)
     {
-        if (!this.m_active || other.GetActive()) // If one of the collider does not collide, no collision will occur, hence false
+        if (!this.m_active || !other.GetActive()) // If one of the collider does not collide, no collision will occur, hence false
         {
+            System.out.print("return");
             return false;
         }
 
@@ -132,7 +133,8 @@ public class Collider
             {
                 // AABB - AABB collision
                 return AABBCollision(other, dt);
-            } else if (other.GetType() == E_COLLIDER_TYPE.CT_DIST)
+            }
+            else if (other.GetType() == E_COLLIDER_TYPE.CT_DIST)
             {
                 // AABB - Dist collision
                 return AABBCollision(other, dt); // Use AABB - AABB collision
@@ -144,12 +146,14 @@ public class Collider
             {
                 // Dist - AABB collision
                 return AABBCollision(other, dt); // Use AABB - AABB collision
-            } else if (other.GetType() == E_COLLIDER_TYPE.CT_DIST)
+            }
+            else if (other.GetType() == E_COLLIDER_TYPE.CT_DIST)
             {
                 // Dist - Dist collision
                 return distCollision(other, dt);
             }
         }
+
         return false;
     }
 
@@ -193,19 +197,19 @@ public class Collider
     }
 
     boolean distCollision(Collider other, final double dt)
-{
-    // TODO: Make exceptions for oval
-
-    // Temp dist collision (Only works with circles)
-    float distSquared = (other.GetPosition().Subtract(m_position)).LengthSquared();
-    float thisRadius = m_diameter.x * 0.5f, oRadius = other.GetDiameter().x * 0.5f;
-
-    if (((thisRadius * thisRadius) + (oRadius * oRadius)) < distSquared)
     {
-        return true;
+        // TODO: Make exceptions for oval
+
+        // Temp dist collision (Only works with circles)
+        float distSquared = (other.GetPosition().Subtract(m_position)).LengthSquared();
+        float thisRadius = m_diameter.x * 0.5f, oRadius = other.GetDiameter().x * 0.5f;
+
+        if (((thisRadius * thisRadius) + (oRadius * oRadius)) < distSquared)
+        {
+            return true;
+        }
+        return false;
     }
-    return false;
-}
 
     boolean AABB_Dist_Collision(Collider other, final double dt)
     {

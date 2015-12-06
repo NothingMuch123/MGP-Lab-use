@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 /**
  * Created by Koh Fang Shu on 5/12/2015.
  */
-public class Object extends Collider
+public class Object
 {
     private Bitmap m_mesh;
     private boolean m_render, m_active;

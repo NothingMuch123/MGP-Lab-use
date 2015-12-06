@@ -271,6 +271,21 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 						{
 							gameObject.SetActive(false);
 						}
+
+						// Do collision checking
+						if (m_ship.CollideWith(gameObject, dt))
+						{
+							PowerUp pwup = (PowerUp)gameObject;
+							if (pwup != null)
+							{
+								pwup.AffectShip(m_ship);
+								gameObject.SetActive(false);
+							}
+							else
+							{
+								System.out.print("cmi");
+							}
+						}
 					}
 				}
 
@@ -353,7 +368,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 			Bullet bullet = new Bullet();
 			bullet.Init(null, false, true);
 			m_bulletList.add(bullet);
-			m_goList.add(bullet);
+			//m_goList.add(bullet);
 		}
 
 		return m_bulletList.get(m_bulletList.size()-1);

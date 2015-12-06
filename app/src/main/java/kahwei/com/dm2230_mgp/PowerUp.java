@@ -25,6 +25,7 @@ public abstract class PowerUp extends GameObject
     @Override
     public void Update(final double dt)
     {
+        super.Update(dt);
         // Update the bullet position
         Transform tf = GetTransform();
         Vector3 diff = m_velocity.ScalarMultiply((float)dt);

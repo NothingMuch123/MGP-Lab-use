@@ -9,25 +9,28 @@ import android.graphics.Canvas;
 public class GameObject extends Object
 {
     private Transform m_transform;
+    private Collider m_collider;
 
     public GameObject()
     {
         super();
         m_transform = new Transform();
+        m_collider = new Collider();
     }
 
     public void Init(Bitmap mesh, boolean active, boolean render)
     {
         super.Init(mesh, active, render);
-        m_transform = new Transform();
         if (mesh != null)
         {
             m_transform.m_scale.Set(mesh.getWidth(), mesh.getHeight(), 1.f);
         }
+        m_collider.Init(Collider.E_COLLIDER_TYPE.CT_AABB, m_transform, Collider.E_Y_START.Y_BOTTOM, true);
     }
 
     public void Update(final double dt)
     {
+        m_collider.Update(m_transform);
     }
 
     public void Reset()
@@ -53,5 +56,15 @@ public class GameObject extends Object
 
             canvas.drawBitmap(tex, tf.x - tex.getWidth() * 0.5f, tf.y - tex.getWidth() * 0.5f, null);
         }
+    }
+
+    public final Collider GetCollider()
+    {
+        return m_collider;
+    }
+
+    public boolean CollideWith(GameObject other, double dt)
+    {
+        return m_collider.CollideWith(other.GetCollider(), dt);
     }
 }
