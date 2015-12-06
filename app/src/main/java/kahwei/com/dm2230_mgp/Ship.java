@@ -23,7 +23,7 @@ public class Ship extends GameObject
     // Position
     private Vector3 m_defaultPos;
 
-    // Ship Power
+    // Ship Power and Weapons
     public enum PowerType
     {
         PT_NORMAL,
@@ -31,9 +31,12 @@ public class Ship extends GameObject
         PT_SPIKE
     };
     private PowerType m_power;
+    private Weapon m_weapon;
+
+    // Textures
     private Bitmap m_shipTexture[];
     private Bitmap m_rankTexture;
-    private Weapon m_weapon;
+    private SpriteAnimation m_rocketAnim;
 
     // Life
     private static final int MAX_LIVES = 5;
@@ -59,6 +62,7 @@ public class Ship extends GameObject
         m_shipTexture[PowerType.PT_NORMAL.ordinal()] = BitmapFactory.decodeResource(resources, R.drawable.ship_normal);
         m_shipTexture[PowerType.PT_BEAM.ordinal()] = BitmapFactory.decodeResource(resources, R.drawable.ship_beam);
         m_shipTexture[PowerType.PT_SPIKE.ordinal()] = BitmapFactory.decodeResource(resources, R.drawable.ship_spike);
+        m_rocketAnim = new SpriteAnimation(BitmapFactory.decodeResource(resources, R.drawable.rocket_anim), 496, 31, 16, 8);
 
         // Load Rank Texture
         m_rankTexture = BitmapFactory.decodeResource(resources, R.drawable.rank);
@@ -72,7 +76,12 @@ public class Ship extends GameObject
     @Override
     public void Update(final double dt)
     {
-        super.Update(dt); m_weapon.Update(dt);
+        // Update the collision
+        super.Update(dt);
+        // Update the weapon
+        m_weapon.Update(dt);
+        // Update the rocket animation
+        m_rocketAnim.update(System.currentTimeMillis());
     }
 
     /*
@@ -126,6 +135,11 @@ public class Ship extends GameObject
         float shipDrawPosX = GetPositionX() - GetScaleX() * 0.5f;
         float shipDrawPosY = GetPositionY() - GetScaleY() * 0.5f;
         float rankDrawPosY = shipDrawPosY + GetScaleY() * 0.5f;
+
+        // Draw the rocket behind the ship
+        m_rocketAnim.setX((int)(GetPositionX() - m_rocketAnim.getSpriteWidth() * 0.5f));
+        m_rocketAnim.setY((int)(rankDrawPosY + (m_rankTexture.getHeight() * 0.4f) * (m_weapon.GetPowerLevel() + 1) + m_rocketAnim.getSpriteHeight() * 0.4f));
+        m_rocketAnim.draw(canvas);
 
         // Draw the Ship
         canvas.drawBitmap(GetMesh(), shipDrawPosX, shipDrawPosY, null);
