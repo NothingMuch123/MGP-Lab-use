@@ -317,6 +317,25 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 					if (enemy.GetActive())
 					{
 						enemy.Update(dt, screenWidth, screenHeight);
+
+						// Check Collision with Bullets
+						for (int bullet = 0; bullet < m_bulletList.size(); ++bullet)
+						{
+							Bullet b = m_bulletList.get(bullet);
+							if (b.GetActive())
+							{
+								if (b.CollideWith(b, dt))
+								{
+									// Kill enemy
+									enemy.SetActive(false);
+									enemy.SetRender(false);
+									// Kill bullet
+									b.SetActive(false);
+									// Stop checking, no point coz it's dead
+									break;
+								}
+							}
+						}
 					}
 				}
 
