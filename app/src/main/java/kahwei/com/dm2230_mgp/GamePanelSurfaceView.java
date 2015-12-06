@@ -275,10 +275,9 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 						// Do collision checking
 						if (m_ship.CollideWith(gameObject, dt))
 						{
-							PowerUp pwup = (PowerUp)gameObject;
-							if (pwup != null)
+							if (gameObject instanceof PowerUp)
 							{
-								pwup.AffectShip(m_ship);
+								((PowerUp)gameObject).AffectShip(m_ship);
 								gameObject.SetActive(false);
 							}
 							else
@@ -368,7 +367,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 			Bullet bullet = new Bullet();
 			bullet.Init(null, false, true);
 			m_bulletList.add(bullet);
-			//m_goList.add(bullet);
+			m_goList.add(bullet);
 		}
 
 		return m_bulletList.get(m_bulletList.size()-1);

@@ -161,7 +161,6 @@ public class Ship extends GameObject
         // We got enough bullets, now lets shoot them all out
         if (m_weapon.Shoot())
         {
-
             for (int bInfo = 0; bInfo < shotDatas.size(); ++ bInfo)
             {
                 Bullet current = m_bulletBuffer.get(bInfo);
@@ -170,6 +169,9 @@ public class Ship extends GameObject
                 tf.m_translate = GetTransform().m_translate.Add(shotDatas.get(bInfo).m_centerOffset);
                 bullet.SetTransform(tf);
             }
+
+            // Clear the buffer for the next shot
+            m_bulletBuffer.clear();
         }
     }
 
