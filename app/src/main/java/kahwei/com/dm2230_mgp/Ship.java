@@ -13,6 +13,7 @@ import kahwei.com.dm2230_mgp.Object.Vector3;
 import kahwei.com.dm2230_mgp.Weapon.Bullet;
 import kahwei.com.dm2230_mgp.Weapon.NormalWeapon;
 import kahwei.com.dm2230_mgp.Weapon.ShotData;
+import kahwei.com.dm2230_mgp.Weapon.SpikeWeapon;
 import kahwei.com.dm2230_mgp.Weapon.Weapon;
 
 /**
@@ -55,7 +56,7 @@ public class Ship extends GameObject
         SetPositionX(pos.x);
         SetPositionY(pos.y);
         m_shipTexture = new Bitmap[PowerType.values().length];
-        m_power = PowerType.PT_NORMAL;
+        m_power = PowerType.PT_SPIKE;
         m_health = STARTING_LIVES;
 
         // Load Ship Textures
@@ -68,7 +69,7 @@ public class Ship extends GameObject
         m_rankTexture = BitmapFactory.decodeResource(resources, R.drawable.rank);
 
         // Load default weapon
-        m_weapon = new NormalWeapon(resources);
+        m_weapon = new SpikeWeapon(resources);
 
         super.Init(m_shipTexture[m_power.ordinal()], true, true);
     }
@@ -138,7 +139,7 @@ public class Ship extends GameObject
 
         // Draw the rocket behind the ship
         m_rocketAnim.setX((int)(GetPositionX() - m_rocketAnim.getSpriteWidth() * 0.5f));
-        m_rocketAnim.setY((int)(rankDrawPosY + (m_rankTexture.getHeight() * 0.4f) * (m_weapon.GetPowerLevel() + 1) + m_rocketAnim.getSpriteHeight() * 0.4f));
+        m_rocketAnim.setY((int) (rankDrawPosY + (m_rankTexture.getHeight() * 0.4f) * (m_weapon.GetPowerLevel() + 1) + m_rocketAnim.getSpriteHeight() * 0.4f));
         m_rocketAnim.draw(canvas);
 
         // Draw the Ship
