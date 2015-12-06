@@ -9,6 +9,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -24,11 +25,13 @@ import kahwei.com.dm2230_mgp.PowerUp.PowerUp;
 import kahwei.com.dm2230_mgp.PowerUp.RankPowerUp;
 import kahwei.com.dm2230_mgp.Weapon.Bullet;
 
-public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.Callback
+public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.Callback		// Implement this interface to receive information about changes to the surface.
 {
-	// Implement this interface to receive information about changes to the surface.
+	// Thread to control the rendering
+	private GameThread m_gameThread = null;
 
-	private GameThread m_gameThread = null; // Thread to control the rendering
+	// Vibrator to Vibrate
+	Vibrator m_vibrator;
 
 	// Bitmaps
 	private Bitmap bg;
@@ -147,6 +150,9 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 
 		// Make the GamePanel focusable so it can handle events
 		setFocusable(true);
+
+		// Set up the Vibrator
+		m_vibrator = (Vibrator)getContext().getSystemService(Context.VIBRATOR_SERVICE);
 	}
 
 	//must implement inherited abstract methods
@@ -419,6 +425,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		switch (event.getAction())
 		{
 			case MotionEvent.ACTION_DOWN:
+				m_vibrator.vibrate(100);
 			case MotionEvent.ACTION_MOVE:
 				movePlayer(event.getX(), event.getY());
 				m_attemptShoot = true;
