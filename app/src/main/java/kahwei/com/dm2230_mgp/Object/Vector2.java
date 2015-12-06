@@ -15,7 +15,12 @@ public class Vector2
         return a - b <= EPSILON && b - a <= EPSILON;
     }
 
-    /*public Vector2( float a, float b ) //Overloaded constructor
+    public Vector2() //Overloaded constructor
+    {
+        x = y = 0.0f;
+    }
+
+    public Vector2( float a, float b ) //Overloaded constructor
     {
         x = a;
         y = b;
@@ -25,7 +30,7 @@ public class Vector2
     {
         x = rhs.x;
         y = rhs.y;
-    }*/
+    }
 
     public void Set( float a, float b ) //Set all data
     {

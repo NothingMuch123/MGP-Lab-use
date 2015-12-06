@@ -9,6 +9,25 @@ public class Vector3 extends Vector2
 
     public float z;
 
+    public Vector3()
+    {
+        super();
+        z = 0.0f;
+    }
+
+    public Vector3(float x, float y, float z)
+    {
+        super(x, y);
+        z = 0.0f;
+    }
+
+    public Vector3(Vector3 copy)
+    {
+        x = copy.x;
+        y = copy.y;
+        z = copy.z;
+    }
+
     public void Set( float a, float b, float c) //Set all data
     {
         Set(a, b);
