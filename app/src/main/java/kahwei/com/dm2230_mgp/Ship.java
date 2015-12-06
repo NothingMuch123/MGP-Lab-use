@@ -5,9 +5,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 
+import java.util.ArrayList;
+
 import kahwei.com.dm2230_mgp.Object.GameObject;
 import kahwei.com.dm2230_mgp.Object.Transform;
 import kahwei.com.dm2230_mgp.Object.Vector3;
+import kahwei.com.dm2230_mgp.Weapon.NormalWeapon;
+import kahwei.com.dm2230_mgp.Weapon.ShotData;
+import kahwei.com.dm2230_mgp.Weapon.Weapon;
 
 /**
  * Created by xecli on 11/26/2015.
@@ -34,6 +39,9 @@ public class Ship extends GameObject
     private static final int STARTING_LIVES = 2;
     private int m_health;
 
+    // Bullet storage for firing multiple shots at once
+    private ArrayList<Bullet> m_bulletBuffer;
+
     Ship()
     {
         super();
@@ -59,6 +67,9 @@ public class Ship extends GameObject
 
         // Load default weapon
         m_weapon = new NormalWeapon(resources);
+
+        // Set up the Bullet Buffer
+        m_bulletBuffer = new ArrayList<Bullet>();
 
         super.Init(m_shipTexture[m_power.ordinal()], true, true);
     }
@@ -133,12 +144,32 @@ public class Ship extends GameObject
 
     public void Shoot(Bullet bullet)
     {
+        ArrayList<ShotData> shotDatas = m_weapon.GetShotDatas();
+
+        // If we need more bullets for the next shot
+        if (m_bulletBuffer.size() < shotDatas.size())
+        {
+            m_bulletBuffer.add(bullet);
+        }
+
+        // Don't shoot yet. Wait for us to get more bullets.
+        if (m_bulletBuffer.size() < shotDatas.size())
+        {
+            return;
+        }
+
+        // We got enough bullets, now lets shoot them all out
         if (m_weapon.Shoot())
         {
-            bullet.Init(m_weapon.GetBulletTexture(), true, m_weapon.GetBulletVelocity());
-            Transform tf = bullet.GetTransform();
-            tf.m_translate = GetTransform().m_translate;
-            bullet.SetTransform(tf);
+
+            for (int bInfo = 0; bInfo < shotDatas.size(); ++ bInfo)
+            {
+                Bullet current = m_bulletBuffer.get(bInfo);
+                current.Init(m_weapon.GetBulletTexture(), true, shotDatas.get(bInfo).m_velocity);
+                Transform tf = bullet.GetTransform();
+                tf.m_translate = GetTransform().m_translate.Add(shotDatas.get(bInfo).m_centerOffset);
+                bullet.SetTransform(tf);
+            }
         }
     }
 
