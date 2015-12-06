@@ -234,6 +234,17 @@ public class Ship extends GameObject
         m_power = pType;
     }
 
+    public void Kill()
+    {
+        // Decrease Health
+        m_health--;
+
+        // Reset to default position
+        Transform tf = GetTransform();
+        tf.m_translate.Set(m_defaultPos.x, m_defaultPos.y, m_defaultPos.z);
+        SetTransform(tf);
+    }
+
     public boolean IsAlive()
     {
         return m_health > 0;

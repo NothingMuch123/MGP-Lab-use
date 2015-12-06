@@ -353,6 +353,20 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 					}
 				}
 
+				// Check for player collision with enemy bullets
+				for (int eB = 0; eB < m_enemyBulletList.size(); ++eB)
+				{
+					Bullet bullet = m_enemyBulletList.get(eB);
+					if (m_ship.CollideWith(bullet, dt))
+					{
+						// Hurt the player
+						m_ship.Kill();
+						// Destroy the bullet
+						bullet.SetActive(false);
+						bullet.SetRender(false);
+					}
+				}
+
 				// Kill the game if player lost
 				if (!m_ship.IsAlive())
 				{
@@ -503,7 +517,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 	{
 		EnemyShip e = fetchEnemy(); // Fetch an empty enemy
 		e.Init(screenWidth, screenHeight, getResources()); // Create an enemy
-		e.InitWeapon(10.f, getResources());
+		e.InitWeapon(1.f, getResources());
 		return true;
 	}
 }
