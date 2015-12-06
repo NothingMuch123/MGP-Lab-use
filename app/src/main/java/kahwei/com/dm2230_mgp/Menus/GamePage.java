@@ -1,4 +1,4 @@
-package kahwei.com.dm2230_mgp;
+package kahwei.com.dm2230_mgp.Menus;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -10,6 +10,9 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import kahwei.com.dm2230_mgp.GamePanelSurfaceView;
+import kahwei.com.dm2230_mgp.R;
 
 /**
  * Created by xecli on 11/23/2015.

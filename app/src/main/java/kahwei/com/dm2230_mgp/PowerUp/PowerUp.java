@@ -1,10 +1,11 @@
-package kahwei.com.dm2230_mgp;
+package kahwei.com.dm2230_mgp.PowerUp;
 
 import android.graphics.Bitmap;
 
 import kahwei.com.dm2230_mgp.Object.GameObject;
 import kahwei.com.dm2230_mgp.Object.Transform;
 import kahwei.com.dm2230_mgp.Object.Vector3;
+import kahwei.com.dm2230_mgp.Ship;
 
 /**
  * Created by xecli on 12/6/2015.

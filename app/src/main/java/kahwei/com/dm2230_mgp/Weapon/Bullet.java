@@ -1,4 +1,4 @@
-package kahwei.com.dm2230_mgp;
+package kahwei.com.dm2230_mgp.Weapon;
 
 import android.graphics.Bitmap;
 
@@ -13,7 +13,7 @@ public class Bullet extends GameObject
 {
     private Vector3 m_velocity;
 
-    Bullet()
+    public Bullet()
     {
         m_velocity = new Vector3();
         m_velocity.Set(0.0f, 0.0f, 0.0f);

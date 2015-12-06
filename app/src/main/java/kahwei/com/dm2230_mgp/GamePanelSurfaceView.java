@@ -19,6 +19,10 @@ import java.util.ArrayList;
 
 import kahwei.com.dm2230_mgp.Object.GameObject;
 import kahwei.com.dm2230_mgp.Object.Vector3;
+import kahwei.com.dm2230_mgp.PowerUp.LifePowerUp;
+import kahwei.com.dm2230_mgp.PowerUp.PowerUp;
+import kahwei.com.dm2230_mgp.PowerUp.RankPowerUp;
+import kahwei.com.dm2230_mgp.Weapon.Bullet;
 
 public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 {
@@ -43,6 +47,9 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 
 	// Ship
 	Ship m_ship;
+
+	// Bullet buffer for sending to the ship
+	ArrayList<Bullet> m_bulletBuffer;
 
 	// All GameObjects stored in this list including bullets and powerups
 	private ArrayList<GameObject> m_goList;
@@ -111,6 +118,9 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		// Create the game loop thread
 		m_gameThread = new GameThread(getHolder(), this);
 
+		// Initialize the bulletbuffer
+		m_bulletBuffer = new ArrayList<Bullet>();
+
 		// Initialize game object list
 		m_goList = new ArrayList<GameObject>();
 
@@ -121,12 +131,12 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		m_powerUpList = new ArrayList<PowerUp>();
 
 		// TODO: Remove this testing code for lives
-		LifePowerUp pwup = new LifePowerUp();
+		PowerUp pwup = new RankPowerUp();
 		Vector3 pos = new Vector3();
 		pos.Set(screenWidth * 0.5f, screenHeight * 0.5f);
 		Vector3 vel = new Vector3();
 		vel.Set(-25.0f, 100.0f);
-		pwup.Init(m_lifeTexture, true, true, pos, vel);
+		pwup.Init(BitmapFactory.decodeResource(getResources(), R.drawable.rank), true, true, pos, vel);
 		m_goList.add(pwup);
 		m_powerUpList.add(pwup);
 
@@ -247,7 +257,13 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 				// Update the Shooting
 				if (m_attemptShoot)
 				{
-					m_ship.Shoot(fetchBullet());
+					// Collect 5 bullets to be used
+					for (int i = 0; i < 5; ++i)
+					{
+						m_bulletBuffer.add(fetchBullet());
+					}
+					m_ship.Shoot(m_bulletBuffer);
+					m_bulletBuffer.clear();
 				}
 
 				// Update all the gameobjects
@@ -278,7 +294,6 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 							if (gameObject instanceof PowerUp)
 							{
 								((PowerUp)gameObject).AffectShip(m_ship);
-								gameObject.SetActive(false);
 							}
 							else
 							{
@@ -356,6 +371,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		{
 			if (b.GetActive() == false)
 			{
+				b.SetActive(true);
 				return b;
 			}
 		}
@@ -370,7 +386,9 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 			m_goList.add(bullet);
 		}
 
-		return m_bulletList.get(m_bulletList.size()-1);
+		Bullet b = m_bulletList.get(m_bulletList.size()-1);
+		b.SetActive(true);
+		return b;
 	}
 
 	private EnemyShip fetchEnemy()

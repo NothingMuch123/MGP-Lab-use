@@ -1,4 +1,4 @@
-package kahwei.com.dm2230_mgp;
+package kahwei.com.dm2230_mgp.Menus;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
+
+import kahwei.com.dm2230_mgp.R;
 
 public class SplashPage extends Activity
 {

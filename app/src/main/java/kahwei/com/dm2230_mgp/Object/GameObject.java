@@ -49,7 +49,7 @@ public class GameObject extends Object
     }
     public void Draw(Canvas canvas)
     {
-        if (GetRender())
+        if (GetRender() && GetMesh() != null)
         {
             Vector3 tf = GetTransform().m_translate;
             Bitmap tex = GetMesh();

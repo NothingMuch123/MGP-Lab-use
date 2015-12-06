@@ -1,4 +1,4 @@
-package kahwei.com.dm2230_mgp;
+package kahwei.com.dm2230_mgp.Menus;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
+
+import kahwei.com.dm2230_mgp.R;
 
 public class MainMenu extends Activity implements OnClickListener, SeekBar.OnSeekBarChangeListener
 {
