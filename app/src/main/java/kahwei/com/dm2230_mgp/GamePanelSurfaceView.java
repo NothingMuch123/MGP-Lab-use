@@ -18,6 +18,7 @@ import android.view.SurfaceView;
 
 import java.util.ArrayList;
 
+import kahwei.com.dm2230_mgp.Enemy.EnemyShip;
 import kahwei.com.dm2230_mgp.Object.GameObject;
 import kahwei.com.dm2230_mgp.Object.Vector3;
 import kahwei.com.dm2230_mgp.PowerUp.AugmentPowerUp;
@@ -25,6 +26,7 @@ import kahwei.com.dm2230_mgp.PowerUp.LifePowerUp;
 import kahwei.com.dm2230_mgp.PowerUp.PowerUp;
 import kahwei.com.dm2230_mgp.PowerUp.RankPowerUp;
 import kahwei.com.dm2230_mgp.Weapon.Bullet;
+import kahwei.com.dm2230_mgp.Weapon.ShotData;
 
 public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.Callback		// Implement this interface to receive information about changes to the surface.
 {
@@ -63,6 +65,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 	private ArrayList<PowerUp> m_powerUpList;
 	// Enemy list
 	private ArrayList<EnemyShip> m_enemyList;
+	private ArrayList<Bullet> m_enemyBulletList;
 
 	// Variables for FPS
 	public float FPS;
@@ -148,8 +151,9 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		// Initialize the enemy list
 		EnemyShip.CreateEnemyMesh(getResources());
 		m_enemyList = new ArrayList<EnemyShip>();
+		m_enemyBulletList = new ArrayList<Bullet>();
 		// TODO: Remove temp enemy
-		fetchEnemy().Init(screenWidth, screenHeight, getResources());
+		spawnEnemy();
 
 		// Make the GamePanel focusable so it can handle events
 		setFocusable(true);
@@ -275,6 +279,14 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 					m_bulletBuffer.clear();
 				}
 
+				for (int enemy = 0; enemy < m_enemyList.size(); ++enemy)
+				{
+					EnemyShip e = m_enemyList.get(enemy);
+					m_bulletBuffer.add(fetchEnemyBullet());
+					e.Shoot(m_bulletBuffer);
+					m_bulletBuffer.clear();
+				}
+
 				// Update all the gameobjects
 				for (int b = 0; b < m_goList.size(); ++b)
 				{
@@ -326,7 +338,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 							Bullet b = m_bulletList.get(bullet);
 							if (b.GetActive())
 							{
-								if (b.CollideWith(b, dt))
+								if (b.CollideWith(enemy, dt))
 								{
 									// Kill enemy
 									enemy.SetActive(false);
@@ -419,6 +431,32 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		return b;
 	}
 
+	private Bullet fetchEnemyBullet()
+	{
+		for (Bullet b : m_enemyBulletList)
+		{
+			if (b.GetActive() == false)
+			{
+				b.SetActive(true);
+				return b;
+			}
+		}
+
+		// Not enough bullets
+		final int BATCH_PRODUCE = 30;
+		for (int b = 0; b < BATCH_PRODUCE; ++b)
+		{
+			Bullet bullet = new Bullet();
+			bullet.Init(null, false, true);
+			m_enemyBulletList.add(bullet);
+			m_goList.add(bullet);
+		}
+
+		Bullet b = m_enemyBulletList.get(m_enemyBulletList.size()-1);
+		b.SetActive(true);
+		return b;
+	}
+
 	private EnemyShip fetchEnemy()
 	{
 		for (EnemyShip e : m_enemyList)
@@ -436,6 +474,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 			EnemyShip e = new EnemyShip();
 			//e.Init(screenWidth, screenHeight, getResources());
 			m_enemyList.add(e);
+			m_goList.add(e);
 		}
 
 		return m_enemyList.get(m_enemyList.size()-1);
@@ -460,5 +499,11 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		return super.onTouchEvent(event);
 	}
 
-
+	private boolean spawnEnemy()
+	{
+		EnemyShip e = fetchEnemy(); // Fetch an empty enemy
+		e.Init(screenWidth, screenHeight, getResources()); // Create an enemy
+		e.InitWeapon(10.f, getResources());
+		return true;
+	}
 }
