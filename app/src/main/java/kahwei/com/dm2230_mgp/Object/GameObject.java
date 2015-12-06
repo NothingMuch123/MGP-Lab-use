@@ -54,7 +54,7 @@ public class GameObject extends Object
             Vector3 tf = GetTransform().m_translate;
             Bitmap tex = GetMesh();
 
-            canvas.drawBitmap(tex, tf.x - tex.getWidth() * 0.5f, tf.y - tex.getWidth() * 0.5f, null);
+            canvas.drawBitmap(tex, tf.x - tex.getWidth(), tf.y - tex.getWidth(), null);
         }
     }
 

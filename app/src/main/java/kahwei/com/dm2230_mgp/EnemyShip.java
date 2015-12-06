@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import kahwei.com.dm2230_mgp.Object.GameObject;
@@ -16,7 +17,7 @@ import kahwei.com.dm2230_mgp.Object.Vector3;
 public class EnemyShip extends GameObject
 {
     static final float S_OFF_SCREEN_OFFSET = 280.f;
-    static final float S_SPEED = 100.f;
+    static final float S_SPEED = 300.f;
 
     // Bitmap creation
     static final int S_TOTAL_ENEMY_MESHES = 2;
@@ -32,7 +33,6 @@ public class EnemyShip extends GameObject
     enum E_MOVE_TYPE
     {
         MOVE_NONE, // Do nothing
-        MOVE_TO_DEST, // Move to destination and stop
         MOVE_TO_DEST_RETREAT, // Move to destination and stay for a short period of time before moving to default position
         NUM_MOVE,
     };
@@ -40,6 +40,8 @@ public class EnemyShip extends GameObject
     E_MOVE_TYPE m_type;
     private Vector3 m_defaultPos;
     private Vector3 m_destination;
+    private ArrayList<Vector3> m_subDestinations;
+    private int m_currentSubDestination;
     private float m_timeTillDespawn; // -1 means does not despawn
     private Vector3 m_dir;
     private boolean m_reached;
@@ -49,6 +51,8 @@ public class EnemyShip extends GameObject
         super();
         m_defaultPos = new Vector3();
         m_destination = new Vector3();
+        m_subDestinations = new ArrayList<Vector3>();
+        m_currentSubDestination = 0;
         m_dir = new Vector3();
         m_dir.Set(0.f, -1.f, 0.f);
         m_type = E_MOVE_TYPE.MOVE_NONE;
@@ -107,6 +111,8 @@ public class EnemyShip extends GameObject
         super.Reset();
         m_defaultPos.SetZero();
         m_destination.SetZero();
+        m_subDestinations.clear();
+        m_currentSubDestination = 0;
         m_dir.Set(0.f, -1.f, 0.f);
         m_type = E_MOVE_TYPE.MOVE_NONE;
         m_timeTillDespawn = -1.f;
@@ -123,14 +129,45 @@ public class EnemyShip extends GameObject
     {
         Random random = new Random();
 
+        m_type = E_MOVE_TYPE.values()[random.nextInt(E_MOVE_TYPE.NUM_MOVE.ordinal() - 1) + 1]; // "- 2 + 1" to ensure that MOVE_NONE will never be chose during random
+
         // Generate of ship position
-        Vector3 pos = new Vector3();
+        Vector3 pos = generateSpawnPoint(screenWidth, screenHeight);
+        GetTransform().m_translate = pos;
+        m_defaultPos.Equal(pos);
+
         Vector3 scale = GetTransform().m_scale;
-        pos.y = random.nextInt((int) (screenHeight * 0.75f) + (int)(S_OFF_SCREEN_OFFSET * 0.5f)) - (int)(S_OFF_SCREEN_OFFSET * 0.5f) - (int)(scale.y * 0.5f);
+        switch(m_type)
+        {
+            case MOVE_TO_DEST_RETREAT:
+            {
+                m_destination = generateDestination(screenWidth, screenHeight);
+                m_dir = calcDir(GetTransform().m_translate, m_destination);
+                Vector3 newSub = new Vector3(0.f, m_destination.y, 0.f); // Point 1 of sub destination
+                m_subDestinations.add(newSub);
+                newSub = new Vector3(screenWidth - scale.x, m_destination.y, 0.f); // Point 2 of sub destination
+                m_subDestinations.add(newSub);
+                m_timeTillDespawn = 10.f;
+            }
+            break;
+        }
+    }
+
+    private Vector3 calcDir(Vector3 pos, Vector3 target)
+    {
+        return (target.Subtract(pos)).Normalized();
+    }
+
+    private Vector3 generateSpawnPoint(int screenWidth, int screenHeight)
+    {
+        Random random = new Random(); // Random
+        Vector3 pos = new Vector3(); // Pos of spawn point
+        Vector3 scale = GetTransform().m_scale;
+        pos.y = random.nextInt((int) (screenHeight * 0.75f) + (int)(S_OFF_SCREEN_OFFSET * 0.5f)) - (int)(S_OFF_SCREEN_OFFSET * 0.5f);
         if (pos.y < 0.f)
         {
             // Outside of screen for Y axis, can generate anywhere along X axis
-            pos.x = random.nextInt(screenWidth + (int)S_OFF_SCREEN_OFFSET);
+            pos.x = random.nextInt(screenWidth + (int)S_OFF_SCREEN_OFFSET) - S_OFF_SCREEN_OFFSET * 0.5f;
         }
         else
         {
@@ -139,41 +176,53 @@ public class EnemyShip extends GameObject
             if (tempX < S_OFF_SCREEN_OFFSET * 0.5f)
             {
                 // Left side
-                pos.x -= tempX - scale.x * 0.5f;
+                pos.x -= tempX - scale.x;
             }
             else
             {
                 // Right side
-                pos.x += screenWidth + tempX - (S_OFF_SCREEN_OFFSET * 0.5f) + scale.x * 0.5f;
+                pos.x += screenWidth + tempX - (S_OFF_SCREEN_OFFSET * 0.5f);
             }
         }
-        GetTransform().m_translate = pos;
-        m_defaultPos = pos;
+        return pos;
+    }
 
-        m_destination.Set(random.nextInt(screenWidth), random.nextInt((int) (screenHeight * 0.75f)), 0.f);
-        m_dir =  (m_destination.Subtract(GetTransform().m_translate)).Normalized(); // Calculate direction to destination
-
-        m_type = E_MOVE_TYPE.values()[random.nextInt(E_MOVE_TYPE.NUM_MOVE.ordinal() - 1)];
-
-        switch(m_type)
-        {
-            case MOVE_TO_DEST:
-            {
-                m_timeTillDespawn = -1.f;
-            }
-            break;
-            case MOVE_TO_DEST_RETREAT:
-            {
-                m_timeTillDespawn = 10.f;
-            }
-            break;
-        }
+    private Vector3 generateDestination(int screenWidth, int screenHeight)
+    {
+        Random random = new Random();
+        Vector3 result = new Vector3();
+        Vector3 scale = GetTransform().m_scale;
+        result.Set(random.nextInt((int)(screenWidth - scale.x)), random.nextInt((int)(screenHeight * 0.75f - scale.y)), 0.f);
+        return result;
     }
 
     private void move(final double dt)
     {
         if (m_reached) // Reached
         {
+            switch (m_type)
+            {
+                case MOVE_TO_DEST_RETREAT:
+                {
+                    if (m_subDestinations.size() > 0)
+                    {
+                        if (m_destination.equals(m_subDestinations.get(m_currentSubDestination))) // If current sub destination assigned and reached
+                        {
+                            ++m_currentSubDestination;
+                            if (m_currentSubDestination == m_subDestinations.size()) // Reached the end of sub destination, reset
+                            {
+                                m_currentSubDestination = 0;
+                            }
+                            changeDestination(m_subDestinations.get(m_currentSubDestination));
+                        }
+                        else // Current sub destination not assigned yet
+                        {
+                            changeDestination(m_subDestinations.get(m_currentSubDestination));
+                        }
+                    }
+                }
+                break;
+            }
             return;
         }
         else // Not reached
@@ -184,7 +233,7 @@ public class EnemyShip extends GameObject
             float movementSquared = movement * movement;
             if (movementSquared >= lengthBetweenPointsSquared) // Will reach or pass destination in this frame
             {
-                GetTransform().m_translate = m_destination;
+                GetTransform().m_translate.Equal(m_destination);
                 m_reached = true;
             }
             else
@@ -215,5 +264,6 @@ public class EnemyShip extends GameObject
     {
         m_destination = newDestination;
         m_reached = false;
+        m_dir = calcDir(GetTransform().m_translate, newDestination);
     }
 }

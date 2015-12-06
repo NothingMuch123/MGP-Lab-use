@@ -146,6 +146,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		// Initialize the enemy list
 		EnemyShip.CreateEnemyMesh(getResources());
 		m_enemyList = new ArrayList<EnemyShip>();
+		// TODO: Remove temp enemy
 		fetchEnemy().Init(screenWidth, screenHeight, getResources());
 
 		// Make the GamePanel focusable so it can handle events
