@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import kahwei.com.dm2230_mgp.Object.GameObject;
 import kahwei.com.dm2230_mgp.Object.Transform;
 import kahwei.com.dm2230_mgp.Object.Vector3;
+import kahwei.com.dm2230_mgp.Weapon.BeamWeapon;
 import kahwei.com.dm2230_mgp.Weapon.Bullet;
 import kahwei.com.dm2230_mgp.Weapon.NormalWeapon;
 import kahwei.com.dm2230_mgp.Weapon.ShotData;
@@ -56,7 +57,7 @@ public class Ship extends GameObject
         SetPositionX(pos.x);
         SetPositionY(pos.y);
         m_shipTexture = new Bitmap[PowerType.values().length];
-        m_power = PowerType.PT_SPIKE;
+        m_power = PowerType.PT_NORMAL;
         m_health = STARTING_LIVES;
 
         // Load Ship Textures
@@ -69,7 +70,7 @@ public class Ship extends GameObject
         m_rankTexture = BitmapFactory.decodeResource(resources, R.drawable.rank);
 
         // Load default weapon
-        m_weapon = new SpikeWeapon(resources);
+        m_weapon = new NormalWeapon(resources);
 
         super.Init(m_shipTexture[m_power.ordinal()], true, true);
     }
