@@ -159,7 +159,7 @@ public class Collider
 
     void calcAABB(Transform transform)
     {
-        switch (m_yStart)
+        /*switch (m_yStart)
         {
             case Y_BOTTOM:
             {
@@ -173,7 +173,9 @@ public class Collider
                 m_maxBound.Set(transform.m_translate.x + (transform.m_scale.x * 0.5f), transform.m_translate.y + (transform.m_scale.y * 0.5f), transform.m_translate.z + (transform.m_scale.z * 0.5f));
             }
             break;
-        }
+        }*/
+        m_minBound.Set(transform.m_translate.x, transform.m_translate.y, 0.f);
+        m_maxBound.Set(transform.m_translate.x + transform.m_scale.x, transform.m_translate.y + transform.m_scale.y, 0.f);
     }
 
     void calcDist(Transform transform)
