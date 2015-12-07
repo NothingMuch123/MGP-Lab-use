@@ -12,6 +12,13 @@ import kahwei.com.dm2230_mgp.Ship;
  */
 public abstract class PowerUp extends GameObject
 {
+    public enum Type
+    {
+        PU_LIFE,
+        PU_RANK,
+        PU_AUGMENT
+    }
+
     private Vector3 m_velocity;
 
     public void Init(Bitmap mesh, boolean active, boolean render, Vector3 position, Vector3 velocity)

@@ -22,7 +22,7 @@ public class SpikeWeapon extends Weapon
         m_weaponStates[1].Init(300,
                 new ShotData(new Vector3(0.0f, -850.0f, 0.0f), new Vector3()),
                 new ShotData(new Vector3(850.0f, 0.0f, 0.0f), new Vector3()),
-                new ShotData(new Vector3(-8500.0f, 0.0f, 0.0f), new Vector3()));
+                new ShotData(new Vector3(-850.0f, 0.0f, 0.0f), new Vector3()));
         m_weaponStates[2].Init(500,
                 new ShotData(new Vector3(0.0f, -1200.0f, 0.0f), new Vector3()),
                 new ShotData(new Vector3(1200.0f, 0.0f, 0.0f), new Vector3()),

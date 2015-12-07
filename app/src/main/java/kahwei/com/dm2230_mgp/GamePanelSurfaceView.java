@@ -15,8 +15,10 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import kahwei.com.dm2230_mgp.Enemy.EnemyShip;
 import kahwei.com.dm2230_mgp.Object.GameObject;
@@ -26,12 +28,14 @@ import kahwei.com.dm2230_mgp.PowerUp.LifePowerUp;
 import kahwei.com.dm2230_mgp.PowerUp.PowerUp;
 import kahwei.com.dm2230_mgp.PowerUp.RankPowerUp;
 import kahwei.com.dm2230_mgp.Weapon.Bullet;
-import kahwei.com.dm2230_mgp.Weapon.ShotData;
 
 public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.Callback		// Implement this interface to receive information about changes to the surface.
 {
 	// Thread to control the rendering
 	private GameThread m_gameThread = null;
+
+	// RNG
+	Random m_rng = new Random();
 
 	// Vibrator to Vibrate
 	Vibrator m_vibrator;
@@ -40,6 +44,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 	private Bitmap bg;
 	private Bitmap scaledBG;
 	private Bitmap m_lifeTexture;
+	private Bitmap m_powerUpTexture[];
 	// 1b) Define Screen width and Screen height as integer
 	private Integer screenWidth;
 	private Integer screenHeight;
@@ -56,6 +61,9 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 
 	// Bullet buffer for sending to the ship
 	ArrayList<Bullet> m_bulletBuffer;
+
+	// Power up storage
+	ArrayList<PowerUp>[] m_powerUpBuffer;
 
 	// All GameObjects stored in this list including bullets and powerups
 	private ArrayList<GameObject> m_goList;
@@ -120,6 +128,19 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		// Generate the scaled version of this the life bitmap
 		m_lifeTexture = Bitmap.createScaledBitmap(m_lifeTexture, 100, 100, true);
 
+		// Load Power up Bitmaps
+		m_powerUpTexture = new Bitmap[PowerUp.Type.values().length + Ship.PowerType.values()
+				.length - 1];
+		m_powerUpTexture[PowerUp.Type.PU_LIFE.ordinal()] = m_lifeTexture;
+		m_powerUpTexture[PowerUp.Type.PU_RANK.ordinal()] = BitmapFactory.decodeResource
+				(getResources(), R.drawable.rank);
+		m_powerUpTexture[PowerUp.Type.PU_AUGMENT.ordinal() + Ship.PowerType.PT_NORMAL.ordinal()] =
+				BitmapFactory.decodeResource(getResources(), R.drawable.normal_augment);
+		m_powerUpTexture[PowerUp.Type.PU_AUGMENT.ordinal() + Ship.PowerType.PT_BEAM.ordinal()] =
+				BitmapFactory.decodeResource(getResources(), R.drawable.beam_augment);
+		m_powerUpTexture[PowerUp.Type.PU_AUGMENT.ordinal() + Ship.PowerType.PT_SPIKE.ordinal()] =
+				BitmapFactory.decodeResource(getResources(), R.drawable.spike_augment);
+
 		// Initialize the Ship
 		m_ship = new Ship();
 		Vector3 shipPos = new Vector3();
@@ -135,6 +156,34 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		// Initialize game object list
 		m_goList = new ArrayList<GameObject>();
 
+		// Initialize power up buffer
+		m_powerUpBuffer = new ArrayList[PowerUp.Type.values().length];
+		// Initialize each buffer for each power up
+		for (int buffer = 0; buffer < m_powerUpBuffer.length; ++buffer)
+		{
+			m_powerUpBuffer[buffer] = new ArrayList<PowerUp>();
+		}
+		// Add power ups to the buffer
+		for (int p = 0; p < 5; ++p)
+		{
+			PowerUp pwup;
+
+			pwup = new LifePowerUp();
+			pwup.Reset();
+			m_powerUpBuffer[PowerUp.Type.PU_LIFE.ordinal()].add(pwup);
+			m_goList.add(pwup);
+
+			pwup = new RankPowerUp();
+			pwup.Reset();
+			m_powerUpBuffer[PowerUp.Type.PU_RANK.ordinal()].add(pwup);
+			m_goList.add(pwup);
+
+			pwup = new AugmentPowerUp();
+			pwup.Reset();
+			m_powerUpBuffer[PowerUp.Type.PU_AUGMENT.ordinal()].add(pwup);
+			m_goList.add(pwup);
+		}
+
 		// Initialize the bullet list
 		m_bulletList = new ArrayList<Bullet>();
 
@@ -142,15 +191,42 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		m_powerUpList = new ArrayList<PowerUp>();
 
 		// TODO: Remove this testing code for lives
-		PowerUp pwup = new AugmentPowerUp();
-		Vector3 pos = new Vector3();
-		pos.Set(screenWidth * 0.5f, screenHeight * 0.5f);
-		Vector3 vel = new Vector3();
-		vel.Set(-25.0f, 100.0f);
-		AugmentPowerUp apwup = (AugmentPowerUp)pwup;
-		apwup.Init(BitmapFactory.decodeResource(getResources(), R.drawable.spike_augment), true, true, pos, vel, Ship.PowerType.PT_SPIKE);
+		PowerUp pwup = new RankPowerUp();
+		pwup.Init(BitmapFactory.decodeResource(getResources(), R.drawable.rank), true, true,
+				new Vector3(screenWidth * 0.8f, screenHeight * 0.3f, 0.0f),
+				new Vector3(-25.0f, 25.0f, 0.0f));
 		m_goList.add(pwup);
 		m_powerUpList.add(pwup);
+
+		pwup = new RankPowerUp();
+		pwup.Init(BitmapFactory.decodeResource(getResources(), R.drawable.rank), true, true,
+				new Vector3(screenWidth * 0.8f, screenHeight * 0.8f, 0.0f),
+				new Vector3(-25.0f, 25.0f, 0.0f));
+		m_goList.add(pwup);
+		m_powerUpList.add(pwup);
+
+		pwup = new LifePowerUp();
+		pwup.Init(BitmapFactory.decodeResource(getResources(), R.drawable.life), true, true,
+				new Vector3(screenWidth * 0.2f, screenHeight * 0.4f, 0.0f),
+				new Vector3(25.0f, 50.0f, 0.0f));
+		m_goList.add(pwup);
+		m_powerUpList.add(pwup);
+
+		AugmentPowerUp apwup = new AugmentPowerUp();
+		apwup.Init(BitmapFactory.decodeResource(getResources(), R.drawable.spike_augment), true, true,
+				new Vector3(screenWidth * 0.5f, screenHeight * 0.5f, 0.0f),
+				new Vector3(25.0f, 50.0f, 0.0f),
+				Ship.PowerType.PT_SPIKE);
+		m_goList.add(apwup);
+		m_powerUpList.add(apwup);
+
+		apwup = new AugmentPowerUp();
+		apwup.Init(BitmapFactory.decodeResource(getResources(), R.drawable.beam_augment), true, true,
+				new Vector3(screenWidth * 0.8f, screenHeight * 0.1f, 0.0f),
+				new Vector3(-25.0f, 50.0f, 0.0f),
+				Ship.PowerType.PT_BEAM);
+		m_goList.add(apwup);
+		m_powerUpList.add(apwup);
 
 		// Initialize the enemy list
 		EnemyShip.CreateEnemyMesh(getResources());
@@ -269,6 +345,9 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 					bgY = 0;
 				}
 
+				// Spawn some power ups
+				//spawnPowerUp();
+
 				// Update the Ship
 				m_ship.Update(dt);
 
@@ -320,7 +399,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 						if (
 							goPos.x < -goScale.x || goPos.x > screenWidth + goScale.x
 							||
-							goPos.y < -goScale.y || goPos.y > screenHeight + goScale.y
+							goPos.y < -goScale.y * 2 || goPos.y > screenHeight + goScale.y
 							)
 						{
 							gameObject.SetActive(false);
@@ -511,7 +590,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 			m_goList.add(e);
 		}
 
-		return m_enemyList.get(m_enemyList.size()-1);
+		return m_enemyList.get(m_enemyList.size() - 1);
 	}
 
 	@Override
@@ -541,8 +620,75 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		return true;
 	}
 
-	private void powerupSpawner()
+	private void spawnPowerUp()
 	{
+		// Should we spawn something this cycle?
+		final int SPAWN_CHANCE = 40;
+		int chance = m_rng.nextInt(100);
+		if (chance > SPAWN_CHANCE)
+		{
+			// Don't spawn
+			return;
+		}
 
+		PowerUp.Type typeToSpawn;
+		System.out.println(chance);
+		// Choose what to spawn
+		if (chance > 0)
+		{
+			typeToSpawn = PowerUp.Type.PU_LIFE;
+		}
+		else if (chance > 70)
+		{
+			typeToSpawn = PowerUp.Type.PU_RANK;
+		}
+		else
+		{
+			typeToSpawn = PowerUp.Type.PU_AUGMENT;
+		}
+
+		PowerUp powerUpToSpawn = null;
+		powerUpToSpawn = fetchPowerUp(typeToSpawn);
+
+		if (powerUpToSpawn != null)
+		{
+			// Calculate random values
+			Vector3 randPos = new Vector3(-200.0f, screenWidth * m_rng.nextFloat(), 0.0f);
+			float randSpeed = 100.0f + (m_rng.nextFloat() * 100.0f);
+			float xVelFactor =  randSpeed * m_rng.nextFloat();
+			Vector3 randVel = new Vector3(xVelFactor, randSpeed - xVelFactor, 0.0f);
+
+			if (typeToSpawn == PowerUp.Type.PU_AUGMENT)
+			{
+				// Choose the augment to spawn
+				Ship.PowerType augment = Ship.PowerType.values()[m_rng.nextInt(Ship.PowerType.values().length)];
+				// Use the custom spawner for AugmentPowerUp
+				((AugmentPowerUp)powerUpToSpawn).Init(m_powerUpTexture[typeToSpawn.ordinal() +
+								augment.ordinal()],
+						true,
+						true, randPos,
+						randVel, augment);
+			}
+			else
+			{
+				// Spawn the power
+				powerUpToSpawn.Init(m_powerUpTexture[typeToSpawn.ordinal()], true, true, randPos,
+						randVel);
+			}
+		}
+	}
+
+	private PowerUp fetchPowerUp(PowerUp.Type type)
+	{
+		for (PowerUp pwup : m_powerUpBuffer[type.ordinal()])
+		{
+			if (pwup.GetActive() == false)
+			{
+				pwup.SetActive(true);
+				return pwup;
+			}
+		}
+
+		return null;
 	}
 }
