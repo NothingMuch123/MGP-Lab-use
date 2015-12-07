@@ -12,7 +12,8 @@ public class Object
 
     public Object()
     {
-        super();
+        m_render = false;
+        m_active = false;
     }
 
     public void Init(Bitmap mesh, boolean active, boolean render)

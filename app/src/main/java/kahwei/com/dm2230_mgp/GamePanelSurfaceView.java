@@ -67,6 +67,10 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 	private ArrayList<EnemyShip> m_enemyList;
 	private ArrayList<Bullet> m_enemyBulletList;
 
+	// Variable for spawning enemy
+	static final float S_TIME_TILL_SPAWN_ENEMY = 2.f;
+	float m_enemySpawnTimer;
+
 	// Variables for FPS
 	public float FPS;
 	float deltaTime;
@@ -152,8 +156,9 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		EnemyShip.CreateEnemyMesh(getResources());
 		m_enemyList = new ArrayList<EnemyShip>();
 		m_enemyBulletList = new ArrayList<Bullet>();
-		// TODO: Remove temp enemy
-		spawnEnemy();
+
+		// Data to spawn enemy
+		m_enemySpawnTimer = 0.f;
 
 		// Make the GamePanel focusable so it can handle events
 		setFocusable(true);
@@ -267,6 +272,17 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 				// Update the Ship
 				m_ship.Update(dt);
 
+				// Spawning enemies
+				if (m_enemySpawnTimer <= 0.f)
+				{
+					spawnEnemy();
+					m_enemySpawnTimer = S_TIME_TILL_SPAWN_ENEMY;
+				}
+				else
+				{
+					m_enemySpawnTimer -= dt;
+				}
+
 				// Update the Shooting
 				if (m_attemptShoot)
 				{
@@ -279,6 +295,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 					m_bulletBuffer.clear();
 				}
 
+				// Enemy shoot
 				for (int enemy = 0; enemy < m_enemyList.size(); ++enemy)
 				{
 					EnemyShip e = m_enemyList.get(enemy);

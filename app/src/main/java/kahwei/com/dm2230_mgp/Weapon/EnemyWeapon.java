@@ -37,6 +37,7 @@ public class EnemyWeapon
 
     public void InitShots(Transform transform)
     {
+        m_shotDatas.clear();
         Vector3 scale = transform.m_scale;
         m_shotDatas.add(new ShotData(new Vector3(0.f, S_BULLET_SPEED, 0.f), new Vector3(scale.x * 0.5f, scale.y, 0.f)));
     }

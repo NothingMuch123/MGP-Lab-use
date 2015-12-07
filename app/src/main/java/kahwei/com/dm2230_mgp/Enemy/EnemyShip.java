@@ -82,6 +82,7 @@ public class EnemyShip extends GameObject
     public void Update(final double dt, int screenWidth, int screenHeight)
     {
         super.Update(dt);
+
         // Update the time till enemy ship despawn
         if (m_timeTillDespawn > 0.f)
         {
@@ -129,7 +130,7 @@ public class EnemyShip extends GameObject
         m_destination.SetZero();
         m_subDestinations.clear();
         m_currentSubDestination = 0;
-        m_dir.Set(0.f, -1.f, 0.f);
+        m_dir.Set(0.f, 1.f, 0.f);
         m_type = E_MOVE_TYPE.MOVE_NONE;
         m_timeTillDespawn = -1.f;
         m_reached = false;
@@ -207,7 +208,9 @@ public class EnemyShip extends GameObject
 
     private Vector3 calcDir(Vector3 pos, Vector3 target)
     {
-        return (target.Subtract(pos)).Normalized();
+        Vector3 result = new Vector3();
+        result.Equal((target.Subtract(pos)).Normalized());
+        return result;
     }
 
     private Vector3 generateSpawnPoint(int screenWidth, int screenHeight)
@@ -215,7 +218,7 @@ public class EnemyShip extends GameObject
         Random random = new Random(); // Random
         Vector3 pos = new Vector3(); // Pos of spawn point
         Vector3 scale = GetTransform().m_scale;
-        pos.y = random.nextInt((int) (screenHeight * 0.75f) + (int)(S_OFF_SCREEN_OFFSET * 0.5f)) - (int)(S_OFF_SCREEN_OFFSET * 0.5f);
+        pos.y = random.nextInt((int) (screenHeight * 0.75f) + (int)(S_OFF_SCREEN_OFFSET * 0.5f)) - (int)(S_OFF_SCREEN_OFFSET * 0.5f) - scale.y;
         if (pos.y < 0.f)
         {
             // Outside of screen for Y axis, can generate anywhere along X axis
@@ -228,7 +231,7 @@ public class EnemyShip extends GameObject
             if (tempX < S_OFF_SCREEN_OFFSET * 0.5f)
             {
                 // Left side
-                pos.x -= (tempX - S_OFF_SCREEN_OFFSET * 0.5f) - scale.x;
+                pos.x += (tempX - S_OFF_SCREEN_OFFSET * 0.5f) - scale.x;
             }
             else
             {
@@ -245,6 +248,7 @@ public class EnemyShip extends GameObject
         Vector3 result = new Vector3();
         Vector3 scale = GetTransform().m_scale;
         result.Set(random.nextInt((int)(screenWidth - scale.x)), random.nextInt((int)(screenHeight * 0.75f - scale.y)), 0.f);
+
         return result;
     }
 
