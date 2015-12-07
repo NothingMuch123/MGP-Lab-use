@@ -18,15 +18,22 @@ public class SpikeWeapon extends Weapon
         m_bulletTex[0] = m_bulletTex[1] = m_bulletTex[2] = BitmapFactory.decodeResource(r, R.drawable.bullet_spike);
 
         m_weaponStates[0].Init(100,
-                new ShotData(new Vector3(0.0f, -600.0f, 0.0f), new Vector3()));
+                new ShotData(new Vector3(0.0f, -600.0f, 0.0f), new Vector3(m_bulletTex[1]
+                        .getWidth() * 0.5f, 0.0f, 0.0f)));
         m_weaponStates[1].Init(300,
-                new ShotData(new Vector3(0.0f, -850.0f, 0.0f), new Vector3()),
-                new ShotData(new Vector3(850.0f, 0.0f, 0.0f), new Vector3()),
-                new ShotData(new Vector3(-850.0f, 0.0f, 0.0f), new Vector3()));
+                new ShotData(new Vector3(0.0f, -850.0f, 0.0f), new Vector3(m_bulletTex[1]
+                        .getWidth() * 0.5f, 0.0f, 0.0f)),
+                new ShotData(new Vector3(850.0f, 0.0f, 0.0f), new Vector3(0.0f, m_bulletTex[1]
+                        .getWidth() * 0.5f, 0.0f)),
+                new ShotData(new Vector3(-850.0f, 0.0f, 0.0f), new Vector3(0.0f, m_bulletTex[1]
+                        .getWidth() * 0.5f, 0.0f)));
         m_weaponStates[2].Init(500,
-                new ShotData(new Vector3(0.0f, -1200.0f, 0.0f), new Vector3()),
-                new ShotData(new Vector3(1200.0f, 0.0f, 0.0f), new Vector3()),
-                new ShotData(new Vector3(-1200.0f, 0.0f, 0.0f), new Vector3()));
+                new ShotData(new Vector3(0.0f, -1200.0f, 0.0f), new Vector3(m_bulletTex[1]
+                        .getWidth() * 0.5f, 0.0f, 0.0f)),
+                new ShotData(new Vector3(1200.0f, 0.0f, 0.0f), new Vector3(0.0f, m_bulletTex[1]
+                        .getWidth() * 0.5f, 0.0f)),
+                new ShotData(new Vector3(-1200.0f, 0.0f, 0.0f), new Vector3(0.0f, m_bulletTex[1]
+                        .getWidth() * 0.5f, 0.0f)));
 
     }
 }

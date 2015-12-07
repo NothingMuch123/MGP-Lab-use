@@ -456,6 +456,8 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 					{
 						if (m_ship.CollideWith(bullet, dt))
 						{
+							// Vibrate
+							m_vibrator.vibrate(100);
 							// Hurt the player
 							m_ship.Kill();
 							// Destroy the bullet
@@ -513,6 +515,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 				yPos >= touchHitAreaStartY && yPos <= touchHitAreaEndY
 			)
 		{
+			m_attemptShoot = true;
 			m_ship.SetPositionX(xPos);
 			m_ship.SetPositionY(yPos - m_ship.GetScaleY());
 		}
@@ -599,10 +602,8 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		switch (event.getAction())
 		{
 			case MotionEvent.ACTION_DOWN:
-				m_vibrator.vibrate(100);
 			case MotionEvent.ACTION_MOVE:
 				movePlayer(event.getX(), event.getY());
-				m_attemptShoot = true;
 				return true;
 			case MotionEvent.ACTION_UP:
 				m_attemptShoot = false;
