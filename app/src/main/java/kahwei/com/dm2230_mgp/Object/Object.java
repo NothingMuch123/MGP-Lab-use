@@ -28,7 +28,7 @@ public class Object
 
     public void Reset()
     {
-        m_mesh.recycle();
+        m_mesh = null;
         m_active = m_render = false;
     }
 

@@ -341,10 +341,9 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 								if (b.CollideWith(enemy, dt))
 								{
 									// Kill enemy
-									enemy.SetActive(false);
-									enemy.SetRender(false);
+									enemy.Reset();
 									// Kill bullet
-									b.SetActive(false);
+									b.Reset();
 									// Stop checking, no point coz it's dead
 									break;
 								}
@@ -364,8 +363,7 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 							// Hurt the player
 							m_ship.Kill();
 							// Destroy the bullet
-							bullet.SetActive(false);
-							bullet.SetRender(false);
+							bullet.Reset();
 							// Player is killed, no point checking again
 							break;
 						}
@@ -524,5 +522,10 @@ public class GamePanelSurfaceView extends SurfaceView implements SurfaceHolder.C
 		e.Init(screenWidth, screenHeight, getResources()); // Create an enemy
 		e.InitWeapon(1.f, getResources());
 		return true;
+	}
+
+	private void powerupSpawner()
+	{
+
 	}
 }
